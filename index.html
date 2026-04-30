@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Golf Swing Analysis — KnowingPath.ai</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles/globals.css" />
+  <link rel="stylesheet" href="styles/app.css" />
+</head>
+<body>
+
+<!-- ── NAVIGATION ─────────────────────────────────────────────────────────── -->
+<nav>
+  <div class="nav-brand">
+    <svg class="kp-logo-svg" width="44" height="44" viewBox="0 0 44 44" fill="none"
+         xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <circle cx="22" cy="22" r="21" fill="rgba(91,163,217,0.12)"
+              stroke="rgba(91,163,217,0.40)" stroke-width="1"/>
+      <path d="M8 30 Q22 10 36 30" stroke="#5BA3D9" stroke-width="2.5"
+            stroke-linecap="round" fill="none"/>
+      <path d="M12 30 L12 26" stroke="#D4A843" stroke-width="2" stroke-linecap="round"/>
+      <path d="M18 30 L18 22" stroke="#D4A843" stroke-width="2" stroke-linecap="round"/>
+      <path d="M24 30 L24 19" stroke="#D4A843" stroke-width="2" stroke-linecap="round"/>
+      <path d="M30 30 L30 22" stroke="#D4A843" stroke-width="2" stroke-linecap="round"/>
+      <path d="M36 30 L36 26" stroke="#D4A843" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="22" cy="11" r="2.5" fill="#5BA3D9" opacity="0.8"/>
+    </svg>
+    <div class="nav-brand-text">
+      <span class="nav-brand-name">KnowingPath.ai</span>
+      <span class="nav-brand-tagline">Clarity. Compassion. Elevation.</span>
+    </div>
+    <div class="nav-divider"></div>
+    <span class="nav-tag">Golf CV</span>
+  </div>
+  <span class="nav-meta">Swing Analysis &nbsp;·&nbsp; Browser-Local</span>
+</nav>
+
+<!-- ── PAGE ───────────────────────────────────────────────────────────────── -->
+<div class="page">
+
+  <!-- ── TAB BAR ──────────────────────────────────────────────────────────── -->
+  <nav class="tab-bar" style="margin-top:1.25rem;" role="tablist">
+    <button class="tab-btn active" data-tab="analyzer"  role="tab">⛳ Swing Analyzer</button>
+    <button class="tab-btn"        data-tab="metrics"   role="tab">📐 Metrics</button>
+    <button class="tab-btn"        data-tab="overlays"  role="tab">🎨 Overlays</button>
+    <button class="tab-btn"        data-tab="scorecard" role="tab">🏆 Scorecard</button>
+    <button class="tab-btn"        data-tab="radar"     role="tab">📡 Radar Chart</button>
+    <button class="tab-btn"        data-tab="trends"    role="tab">📈 Trends</button>
+    <button class="tab-btn"        data-tab="settings"  role="tab">⚙️ Settings</button>
+  </nav>
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       TAB 1 — SWING ANALYZER
+  ═══════════════════════════════════════════════════════════════════════ -->
+  <div class="tab-panel active" data-panel="analyzer" role="tabpanel">
+
+    <!-- Video Upload Section -->
+    <div style="margin-bottom:1rem;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;">
+        <h3 style="color:var(--text);margin:0;">Upload Swing Videos</h3>
+        <div style="display:flex;align-items:center;gap:0.75rem;">
+          <span style="font-size:0.8rem;color:var(--dim);">Camera view:</span>
+          <div class="view-toggle">
+            <button class="view-btn active" data-view="face-on">Face-On</button>
+            <button class="view-btn" data-view="dtl">Down-the-Line</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="dual-video-grid">
+        <!-- Your Swing -->
+        <div>
+          <div class="upload-zone" id="userDropZone">
+            <input type="file" id="userVideoInput" accept="video/*,.mov,.mp4,.webm,.hevc" />
+            <div class="upload-icon">🏌️</div>
+            <div class="upload-label"><strong>Your Swing</strong></div>
+            <div class="upload-hint">Drag & drop or click · MP4, MOV, WebM · Landscape orientation recommended</div>
+            <div class="upload-filename" id="userFileName"></div>
+          </div>
+          <div class="video-canvas-wrap" style="margin-top:0.5rem;">
+            <video id="userVideo" muted playsinline preload="auto"></video>
+            <div class="video-label you">YOU</div>
+          </div>
+        </div>
+
+        <!-- Pro Swing -->
+        <div>
+          <div class="upload-zone" id="proDropZone">
+            <input type="file" id="proVideoInput" accept="video/*,.mov,.mp4,.webm,.hevc" />
+            <div class="upload-icon">⭐</div>
+            <div class="upload-label"><strong>Pro Swing</strong> <span style="color:var(--dim);font-weight:400;">(optional)</span></div>
+            <div class="upload-hint">Reference for comparison · local file only</div>
+            <div class="upload-filename" id="proFileName"></div>
+          </div>
+          <div class="video-canvas-wrap" style="margin-top:0.5rem;">
+            <video id="proVideo" muted playsinline preload="auto"></video>
+            <div class="video-label pro">PRO</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Analysis Controls -->
+    <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;">
+      <button class="btn btn-primary" id="analyzeBtn" disabled>
+        ▶ Analyze Swing
+      </button>
+      <button class="btn btn-ghost btn-sm" id="cancelBtn" style="display:none;">
+        Cancel
+      </button>
+      <span style="font-size:0.8rem;color:var(--dim);">
+        Upload your video above to begin · Pro swing adds comparison overlay
+      </span>
+    </div>
+
+    <!-- Progress -->
+    <div class="analysis-progress" id="analysisProgress">
+      <div class="progress-status" id="progressText">
+        <span class="progress-msg">Initializing…</span>
+        <span>0%</span>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-bar" id="progressBar" style="width:0%"></div>
+      </div>
+    </div>
+
+    <!-- Phase Timeline (shown after analysis) -->
+    <div id="phaseTimeline" style="margin-top:1.25rem;">
+      <div class="phase-timeline">
+        <div class="phase-seg" data-phase-jump="address"><strong>Address</strong>Setup position</div>
+        <div class="phase-seg" data-phase-jump="top"><strong>Top</strong>Backswing peak</div>
+        <div class="phase-seg" data-phase-jump="impact"><strong>Impact</strong>Ball contact</div>
+        <div class="phase-seg" data-phase-jump="finish"><strong>Finish</strong>Follow-through</div>
+      </div>
+    </div>
+
+    <!-- Quick stats after analysis -->
+    <div id="analyzerStats" style="display:none;margin-top:1rem;">
+      <div class="stat-row">
+        <div class="stat-box">
+          <div class="stat-val" id="statSQI">—</div>
+          <div class="stat-lbl">SQI Score</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val" id="statGrade">—</div>
+          <div class="stat-lbl">Grade</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val" id="statFrames">—</div>
+          <div class="stat-lbl">Frames</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val" id="statTempo">—</div>
+          <div class="stat-lbl">Tempo Ratio</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Inline skeleton preview canvas -->
+    <div style="margin-top:1rem;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;">
+        <h4 style="color:var(--text);margin:0;">Skeleton Preview</h4>
+        <div style="display:flex;gap:0.5rem;">
+          <button class="overlay-toggle-btn active" data-overlay="skeleton-user">
+            <span class="dot" style="background:#5BA3D9;"></span> You
+          </button>
+          <button class="overlay-toggle-btn active" data-overlay="skeleton-pro">
+            <span class="dot" style="background:#D4A843;"></span> Pro
+          </button>
+        </div>
+      </div>
+      <div class="overlay-canvas-wrap" style="min-height:280px;">
+        <canvas id="userCanvas" width="640" height="360"
+                style="width:100%;height:auto;display:block;"></canvas>
+      </div>
+      <div class="scrubber-wrap" style="margin-top:0.5rem;">
+        <span class="scrubber-label">Frame</span>
+        <input type="range" id="frameScrubber" min="0" max="299" value="0" step="1" />
+        <span class="frame-counter" id="scrubberLabel">0.00s</span>
+      </div>
+    </div>
+
+  </div><!-- /analyzer -->
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       TAB 2 — METRICS
+  ═══════════════════════════════════════════════════════════════════════ -->
+  <div class="tab-panel" data-panel="metrics" role="tabpanel">
+    <div style="margin-bottom:1rem;">
+      <h3 style="color:var(--text);">Phase Metrics Comparison</h3>
+      <p style="margin:0;font-size:0.85rem;">
+        Your swing vs pro reference vs ideal ranges at each phase.
+        Color-coded deviation: <span style="color:var(--success);">●</span> in range ·
+        <span style="color:var(--warning);">●</span> slight deviation ·
+        <span style="color:var(--danger);">●</span> significant difference
+      </p>
+    </div>
+    <div class="card" style="padding:1rem;">
+      <div id="metricsTableContent"></div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       TAB 3 — OVERLAYS
+  ═══════════════════════════════════════════════════════════════════════ -->
+  <div class="tab-panel" data-panel="overlays" role="tabpanel">
+
+    <div style="margin-bottom:1rem;">
+      <h3 style="color:var(--text);margin-bottom:0.5rem;">Swing Overlays</h3>
+
+      <!-- Phase jump buttons -->
+      <div style="display:flex;gap:0.5rem;margin-bottom:0.75rem;flex-wrap:wrap;">
+        <button class="btn btn-ghost btn-sm" data-phase-jump="address">Address</button>
+        <button class="btn btn-ghost btn-sm" data-phase-jump="top">Top</button>
+        <button class="btn btn-ghost btn-sm" data-phase-jump="impact">Impact</button>
+        <button class="btn btn-ghost btn-sm" data-phase-jump="finish">Finish</button>
+      </div>
+    </div>
+
+    <!-- 2-column: overlays left, charts right -->
+    <div class="grid-2" style="gap:1.5rem;">
+
+      <!-- Left: skeleton / heatmap canvas -->
+      <div>
+        <div style="display:flex;gap:0.5rem;margin-bottom:0.5rem;flex-wrap:wrap;" class="overlay-toggles">
+          <button class="overlay-toggle-btn active" data-overlay="skeleton">
+            <span class="dot" style="background:#5BA3D9;"></span> Skeleton
+          </button>
+          <button class="overlay-toggle-btn" data-overlay="heatmap">
+            <span class="dot" style="background:#F87171;"></span> Heatmap
+          </button>
+        </div>
+        <div class="overlay-canvas-wrap" style="min-height:320px;">
+          <canvas id="overlayCanvas" width="560" height="360"
+                  style="width:100%;height:auto;display:block;"></canvas>
+        </div>
+      </div>
+
+      <!-- Right: tempo + weight shift charts -->
+      <div style="display:flex;flex-direction:column;gap:1rem;">
+        <div class="card" style="padding:0.75rem;">
+          <h4 style="color:var(--text);margin-bottom:0.5rem;font-size:0.85rem;">Swing Tempo</h4>
+          <canvas id="tempoCanvas" width="360" height="220" style="width:100%;height:auto;"></canvas>
+        </div>
+        <div class="card" style="padding:0.75rem;">
+          <h4 style="color:var(--text);margin-bottom:0.5rem;font-size:0.85rem;">Weight Distribution</h4>
+          <canvas id="weightCanvas" width="420" height="260" style="width:100%;height:auto;"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Club path full width -->
+    <div class="card" style="margin-top:1rem;padding:0.75rem;">
+      <h4 style="color:var(--text);margin-bottom:0.5rem;font-size:0.85rem;">Club Path Approximation</h4>
+      <canvas id="clubCanvas" width="560" height="280" style="width:100%;height:auto;"></canvas>
+    </div>
+
+  </div><!-- /overlays -->
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       TAB 4 — SCORECARD
+  ═══════════════════════════════════════════════════════════════════════ -->
+  <div class="tab-panel" data-panel="scorecard" role="tabpanel">
+    <div style="margin-bottom:1rem;">
+      <h3 style="color:var(--text);">Swing Quality Index</h3>
+      <p style="margin:0;font-size:0.85rem;">
+        Weighted composite score across 7 biomechanical components.
+        <span style="color:var(--gold);">90+</span> = excellent ·
+        <span style="color:var(--accent);">70–89</span> = good ·
+        <span style="color:var(--danger);">below 70</span> = needs work
+      </p>
+    </div>
+    <div id="scorecardContent"></div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       TAB 5 — RADAR CHART
+  ═══════════════════════════════════════════════════════════════════════ -->
+  <div class="tab-panel" data-panel="radar" role="tabpanel">
+    <div style="margin-bottom:1rem;">
+      <h3 style="color:var(--text);">Mechanics Radar</h3>
+      <p style="margin:0;font-size:0.85rem;">
+        Hexagonal view of all 5 core metrics.
+        <span style="color:#5BA3D9;">Blue</span> = your swing ·
+        <span style="color:#D4A843;">Gold</span> = pro reference ·
+        <span style="color:#34D399;">Green ring</span> = ideal range
+      </p>
+    </div>
+    <div class="card">
+      <div class="radar-wrap">
+        <canvas id="radarCanvas" width="420" height="340"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       TAB 6 — TRENDS
+  ═══════════════════════════════════════════════════════════════════════ -->
+  <div class="tab-panel" data-panel="trends" role="tabpanel" id="trendContent">
+    <div style="margin-bottom:1rem;">
+      <h3 style="color:var(--text);">Progress Over Time</h3>
+      <p style="margin:0;font-size:0.85rem;">
+        SQI history and metric trends from your saved sessions (IndexedDB, browser-local).
+      </p>
+    </div>
+
+    <!-- Stats row -->
+    <div class="stat-row" id="trendStats">
+      <div class="stat-box"><div class="stat-val">—</div><div class="stat-lbl">Session Avg</div></div>
+      <div class="stat-box"><div class="stat-val gold">—</div><div class="stat-lbl">Best Swing</div></div>
+      <div class="stat-box"><div class="stat-val">—</div><div class="stat-lbl">Day Streak</div></div>
+      <div class="stat-box"><div class="stat-val">—</div><div class="stat-lbl">Total Swings</div></div>
+    </div>
+
+    <div class="card">
+      <div class="trend-wrap">
+        <canvas id="trendCanvas" width="560" height="220" style="width:100%;height:auto;"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       TAB 7 — SETTINGS
+  ═══════════════════════════════════════════════════════════════════════ -->
+  <div class="tab-panel" data-panel="settings" role="tabpanel">
+    <div style="margin-bottom:1rem;">
+      <h3 style="color:var(--text);">Settings</h3>
+      <p style="margin:0;font-size:0.85rem;">Configure the app, choose your pose model, and manage your data.</p>
+    </div>
+
+    <div class="grid-2" style="gap:1.5rem;">
+
+      <div class="card">
+        <div class="settings-section-title">Golfer Profile</div>
+        <div class="settings-section">
+          <div class="settings-row">
+            <div>
+              <div class="settings-row-label">Display Name</div>
+              <div class="settings-row-desc">Used in saved swing records</div>
+            </div>
+            <div class="settings-row-ctrl" style="width:160px;">
+              <input type="text" id="settingGolferTag" placeholder="My Swing" />
+            </div>
+          </div>
+          <div class="settings-row">
+            <div>
+              <div class="settings-row-label">Handedness</div>
+              <div class="settings-row-desc">Right-handed assumed for face-on analysis</div>
+            </div>
+            <div class="settings-row-ctrl">
+              <div class="view-toggle">
+                <button class="view-btn active" data-hand="right">Right</button>
+                <button class="view-btn" data-hand="left">Left</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-section-title" style="margin-top:1rem;">Pose Model</div>
+        <div class="settings-section">
+          <div class="settings-row">
+            <div>
+              <div class="settings-row-label">Model</div>
+              <div class="settings-row-desc">BlazePose = most accurate (33 kpts) · MoveNet = faster</div>
+            </div>
+            <div class="settings-row-ctrl" style="width:220px;">
+              <select id="settingPoseModel">
+                <option value="blazepose">BlazePose (33 kpts)</option>
+                <option value="movenet_lightning">MoveNet Lightning (fast)</option>
+                <option value="movenet_thunder">MoveNet Thunder (accurate)</option>
+              </select>
+            </div>
+          </div>
+          <div class="settings-row">
+            <div>
+              <div class="settings-row-label">Frame Sample Rate</div>
+              <div class="settings-row-desc">Higher = more accurate, slower processing</div>
+            </div>
+            <div class="settings-row-ctrl" style="width:180px;">
+              <div style="display:flex;align-items:center;gap:0.5rem;">
+                <input type="range" id="settingTargetFps" min="5" max="30" step="5" value="15" style="flex:1;" />
+                <span id="fpsDisplay" style="font-size:0.82rem;color:var(--accent);width:4rem;">15 fps</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="settings-section-title">Data Management</div>
+        <div class="settings-section">
+          <div class="settings-row">
+            <div>
+              <div class="settings-row-label">Export All Data</div>
+              <div class="settings-row-desc">Download all swing records as JSON</div>
+            </div>
+            <div class="settings-row-ctrl">
+              <button class="btn btn-ghost btn-sm" id="settingExportData">Export JSON</button>
+            </div>
+          </div>
+          <div class="settings-row">
+            <div>
+              <div class="settings-row-label">Clear All Data</div>
+              <div class="settings-row-desc" style="color:var(--danger);opacity:0.8;">Permanently removes all saved swings</div>
+            </div>
+            <div class="settings-row-ctrl">
+              <button class="btn btn-danger btn-sm" id="settingClearData">Clear Data</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-section-title" style="margin-top:1rem;">About</div>
+        <div style="font-size:0.82rem;color:var(--dim);line-height:1.6;">
+          <p>All computation runs entirely in your browser. No video or pose data is ever sent to a server.</p>
+          <p>Pose estimation: TensorFlow.js · BlazePose / MoveNet.<br/>
+             Storage: IndexedDB (browser-local, survives page refresh).</p>
+          <p style="color:var(--dim);">Assumes right-handed golfer · face-on camera view</p>
+        </div>
+      </div>
+
+    </div>
+  </div><!-- /settings -->
+
+</div><!-- .page -->
+
+<!-- ── FOOTER ─────────────────────────────────────────────────────────────── -->
+<footer>
+  <div class="footer-brand">KnowingPath.ai</div>
+  <div class="footer-tagline">From Not Knowing to Knowing, With Compassion</div>
+  <div style="margin-top:0.5rem;color:#2D3A50;font-size:0.7rem;">
+    © KnowingPath.ai &nbsp;·&nbsp; Golf Swing Analysis &nbsp;·&nbsp; Browser-Local · No Cloud
+  </div>
+</footer>
+
+<!-- ── SCRIPTS ────────────────────────────────────────────────────────────── -->
+<!-- TensorFlow.js -->
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.20.0/dist/tf.min.js"></script>
+<!-- TF.js WASM backend (fallback) -->
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-wasm@4.20.0/dist/tf-backend-wasm.min.js"></script>
+<!-- Pose detection models -->
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection@2.1.3/dist/pose-detection.min.js"></script>
+
+<!-- App (ES module) -->
+<script type="module" src="src/app.js"></script>
+
+</body>
+</html>
