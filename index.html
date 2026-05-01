@@ -11,9 +11,32 @@
 </head>
 <body>
 
-<!-- ── NAVIGATION ─────────────────────────────────────────────────────────── -->
-<nav>
-  <div class="nav-brand">
+<!-- ── FIXED TOP NAVIGATION ──────────────────────────────────────────────── -->
+<nav id="topNav" style="
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  padding: 1.25rem 2rem;
+  background: rgba(10, 15, 30, 0.65);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid transparent;
+  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+">
+  <!-- LEFT: Logo + Brand -->
+  <button id="navBrandBtn" style="
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+  ">
     <svg class="kp-logo-svg" width="44" height="44" viewBox="0 0 44 44" fill="none"
          xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
       <circle cx="22" cy="22" r="21" fill="rgba(91,163,217,0.12)"
@@ -27,18 +50,40 @@
       <path d="M36 30 L36 26" stroke="#D4A843" stroke-width="2" stroke-linecap="round"/>
       <circle cx="22" cy="11" r="2.5" fill="#5BA3D9" opacity="0.8"/>
     </svg>
-    <div class="nav-brand-text">
-      <span class="nav-brand-name">KnowingPath.ai</span>
-      <span class="nav-brand-tagline">Clarity. Compassion. Elevation.</span>
+    <div style="text-align: left;">
+      <div style="
+        font-family: 'Inter', sans-serif;
+        font-weight: 800;
+        font-size: 1rem;
+        color: #E2E8F0;
+        line-height: 1.2;
+        letter-spacing: -0.01em;
+      ">SwingKrazy</div>
+      <div style="
+        font-family: 'Inter', sans-serif;
+        font-style: italic;
+        font-size: 0.7rem;
+        color: #5BA3D9;
+        line-height: 1.2;
+      ">Golf Analysis</div>
     </div>
-    <div class="nav-divider"></div>
-    <span class="nav-tag">Golf CV</span>
+  </button>
+
+  <!-- CENTER/RIGHT: Nav Items + CTA -->
+  <div style="display: flex; gap: 0.25rem; align-items: center;" class="nav-desktop">
+    <button class="nav-item active" data-nav="home">Home</button>
+    <button class="nav-item" data-nav="analyzer">Analyzer</button>
+    <button class="nav-item" data-nav="how-it-works">How It Works</button>
+    <button class="nav-item" data-nav="about">About Us</button>
+    <a href="https://golfgametracker.netlify.app/" target="_blank" class="nav-cta">Golf Tracker Pro →</a>
   </div>
-  <span class="nav-meta">Swing Analysis &nbsp;·&nbsp; Browser-Local</span>
+
+  <!-- Mobile Hamburger -->
+  <button id="navMobileToggle" class="nav-mobile-toggle" style="display: none; background: none; border: none; cursor: pointer; padding: 0.5rem; color: #E2E8F0; font-size: 1.5rem;">☰</button>
 </nav>
 
 <!-- ── PAGE ───────────────────────────────────────────────────────────────── -->
-<div class="page">
+<div class="page" style="padding-top: 80px;">
 
   <!-- ── TAB BAR ──────────────────────────────────────────────────────────── -->
   <nav class="tab-bar" style="margin-top:1.25rem;" role="tablist">
@@ -425,6 +470,182 @@
 
 </div><!-- .page -->
 
+<!-- ── ABOUT US MODAL ────────────────────────────────────────────────────── -->
+<div id="aboutModal" class="modal" style="display:none;">
+  <div class="modal-overlay"></div>
+  <div class="modal-content" style="
+    max-width: 850px;
+    max-height: 90vh;
+    background: rgba(30,41,59,0.80) !important;
+    border: 1px solid rgba(91,163,217,0.20);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 40px rgba(91,163,217,0.25);
+  ">
+    <button class="modal-close">&times;</button>
+
+    <!-- Hero -->
+    <div style="margin-bottom: 2.5rem;">
+      <p style="
+        font-family: 'Inter', sans-serif;
+        font-size: 0.6875rem;
+        font-weight: 600;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: #5BA3D9;
+        margin-bottom: 0.875rem;
+      ">Who We Are</p>
+
+      <h2 style="
+        font-family: 'Inter', sans-serif;
+        font-size: 2rem;
+        font-weight: 800;
+        line-height: 1.2;
+        letter-spacing: -0.025em;
+        background: linear-gradient(135deg, #E2E8F0 0%, #B3D9F5 55%, #D4A843 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 1rem;
+      ">KnowingPath.ai Ecosystem</h2>
+
+      <p style="
+        font-family: 'Inter', sans-serif;
+        font-size: 1rem;
+        line-height: 1.7;
+        color: #94A3B8;
+        max-width: 720px;
+      ">
+        A privacy-first ecosystem of browser-based, locally-running AI tools. From not knowing to knowing, with compassion.
+      </p>
+    </div>
+
+    <!-- Pillars Grid -->
+    <div style="
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      margin-bottom: 2.5rem;
+    ">
+      <!-- Clarity -->
+      <div style="
+        background: rgba(15,23,41,0.60);
+        border: 1px solid rgba(91,163,217,0.16);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.20), 0 0 12px rgba(91,163,217,0.18);
+        position: relative;
+        overflow: hidden;
+        transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
+      " onMouseEnter="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 15px 45px rgba(0,0,0,0.55), 0 0 30px rgba(91,163,217,0.50)';" onMouseLeave="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(0,0,0,0.20), 0 0 12px rgba(91,163,217,0.18)';">
+        <div style="position: absolute; top: 0; left: 10%; right: 10%; height: 1px; background: linear-gradient(90deg, transparent, rgba(91,163,217,0.35), transparent);"></div>
+        <div style="width: 8px; height: 8px; border-radius: 50%; background: #5BA3D9; margin-bottom: 1rem; box-shadow: 0 0 10px rgba(91,163,217,0.60);"></div>
+        <h3 style="font-family: 'Inter', sans-serif; font-size: 1rem; font-weight: 700; color: #82C0EE; margin-bottom: 0.5rem;">Clarity</h3>
+        <p style="font-family: 'Inter', sans-serif; font-size: 0.9rem; line-height: 1.6; color: #94A3B8; margin: 0;">Deep, actionable insights from visual analysis without cloud uploads.</p>
+      </div>
+
+      <!-- Compassion -->
+      <div style="
+        background: rgba(15,23,41,0.60);
+        border: 1px solid rgba(212,168,67,0.14);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.20), 0 0 12px rgba(91,163,217,0.18);
+        position: relative;
+        overflow: hidden;
+        transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
+      " onMouseEnter="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 15px 45px rgba(0,0,0,0.55), 0 0 30px rgba(212,168,67,0.50)';" onMouseLeave="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(0,0,0,0.20), 0 0 12px rgba(91,163,217,0.18)';">
+        <div style="position: absolute; top: 0; left: 10%; right: 10%; height: 1px; background: linear-gradient(90deg, transparent, rgba(212,168,67,0.30), transparent);"></div>
+        <div style="width: 8px; height: 8px; border-radius: 50%; background: #D4A843; margin-bottom: 1rem; box-shadow: 0 0 10px rgba(212,168,67,0.60);"></div>
+        <h3 style="font-family: 'Inter', sans-serif; font-size: 1rem; font-weight: 700; color: #D4A843; margin-bottom: 0.5rem;">Compassion</h3>
+        <p style="font-family: 'Inter', sans-serif; font-size: 0.9rem; line-height: 1.6; color: #94A3B8; margin: 0;">Tools built to help you improve, not judge. Empowering growth at every step.</p>
+      </div>
+
+      <!-- Elevation -->
+      <div style="
+        background: rgba(15,23,41,0.60);
+        border: 1px solid rgba(91,163,217,0.16);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.20), 0 0 12px rgba(91,163,217,0.18);
+        position: relative;
+        overflow: hidden;
+        transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
+      " onMouseEnter="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 15px 45px rgba(0,0,0,0.55), 0 0 30px rgba(91,163,217,0.50)';" onMouseLeave="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(0,0,0,0.20), 0 0 12px rgba(91,163,217,0.18)';">
+        <div style="position: absolute; top: 0; left: 10%; right: 10%; height: 1px; background: linear-gradient(90deg, transparent, rgba(91,163,217,0.35), transparent);"></div>
+        <div style="width: 8px; height: 8px; border-radius: 50%; background: #5BA3D9; margin-bottom: 1rem; box-shadow: 0 0 10px rgba(91,163,217,0.60);"></div>
+        <h3 style="font-family: 'Inter', sans-serif; font-size: 1rem; font-weight: 700; color: #82C0EE; margin-bottom: 0.5rem;">Elevation</h3>
+        <p style="font-family: 'Inter', sans-serif; font-size: 0.9rem; line-height: 1.6; color: #94A3B8; margin: 0;">Empower your journey with insights that lead from not knowing to knowing.</p>
+      </div>
+
+      <!-- Privacy First -->
+      <div style="
+        background: rgba(15,23,41,0.60);
+        border: 1px solid rgba(212,168,67,0.14);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.20), 0 0 12px rgba(91,163,217,0.18);
+        position: relative;
+        overflow: hidden;
+        transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
+      " onMouseEnter="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 15px 45px rgba(0,0,0,0.55), 0 0 30px rgba(212,168,67,0.50)';" onMouseLeave="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(0,0,0,0.20), 0 0 12px rgba(91,163,217,0.18)';">
+        <div style="position: absolute; top: 0; left: 10%; right: 10%; height: 1px; background: linear-gradient(90deg, transparent, rgba(212,168,67,0.30), transparent);"></div>
+        <div style="width: 8px; height: 8px; border-radius: 50%; background: #D4A843; margin-bottom: 1rem; box-shadow: 0 0 10px rgba(212,168,67,0.60);"></div>
+        <h3 style="font-family: 'Inter', sans-serif; font-size: 1rem; font-weight: 700; color: #D4A843; margin-bottom: 0.5rem;">Privacy First</h3>
+        <p style="font-family: 'Inter', sans-serif; font-size: 0.9rem; line-height: 1.6; color: #94A3B8; margin: 0;">All computation runs locally in your browser. Your data stays with you, always.</p>
+      </div>
+    </div>
+
+    <!-- Featured Products -->
+    <div style="
+      background: rgba(30,41,59,0.70);
+      border-top: 1px solid rgba(91,163,217,0.15);
+      border-bottom: 1px solid rgba(91,163,217,0.15);
+      padding: 2rem;
+      margin: 2rem 0;
+    ">
+      <p style="
+        font-family: 'Inter', sans-serif;
+        font-size: 0.6875rem;
+        font-weight: 600;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: #D4A843;
+        margin-bottom: 1rem;
+      ">Our Tools</p>
+
+      <h3 style="
+        font-family: 'Inter', sans-serif;
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #E2E8F0;
+        margin-bottom: 1.5rem;
+      ">Flagship Ecosystem</h3>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        <div>
+          <p style="font-family: 'Inter', sans-serif; font-weight: 600; color: #82C0EE; margin-bottom: 0.5rem;">SwingKrazy</p>
+          <p style="font-family: 'Inter', sans-serif; font-size: 0.9rem; line-height: 1.6; color: #94A3B8; margin: 0;">Professional golf swing analysis. No uploads, no cloud dependency.</p>
+        </div>
+        <div>
+          <p style="font-family: 'Inter', sans-serif; font-weight: 600; color: #D4A843; margin-bottom: 0.5rem;">Golf Tracker Pro</p>
+          <p style="font-family: 'Inter', sans-serif; font-size: 0.9rem; line-height: 1.6; color: #94A3B8; margin: 0;">Track and analyze your on-course performance patterns.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer Text -->
+    <p style="
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      color: #64748B;
+      text-align: center;
+      margin: 0;
+    ">
+      © 2026 KnowingPath.ai · <strong>Private AI. See Everything. Share Nothing.</strong>
+    </p>
+  </div>
+</div>
+
 <!-- ── FOOTER ─────────────────────────────────────────────────────────────── -->
 <footer>
   <div class="footer-brand">KnowingPath.ai</div>
@@ -444,6 +665,116 @@
 
 <!-- App (ES module) -->
 <script type="module" src="src/app.js"></script>
+
+<!-- Navigation & Modal Script -->
+<script>
+(function() {
+  const topNav = document.getElementById('topNav');
+  const navBrandBtn = document.getElementById('navBrandBtn');
+  const navItems = document.querySelectorAll('.nav-item');
+  const navMobileToggle = document.getElementById('navMobileToggle');
+  const aboutModal = document.getElementById('aboutModal');
+  const modalOverlay = document.querySelector('.modal-overlay');
+  const modalClose = document.querySelector('.modal-close');
+
+  // ── Scroll effect for nav styling ──
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 40) {
+      topNav.classList.add('scrolled');
+    } else {
+      topNav.classList.remove('scrolled');
+    }
+  }, { passive: true });
+
+  // ── Navigation item clicks ──
+  navItems.forEach(item => {
+    item.addEventListener('click', (e) => {
+      const nav = item.getAttribute('data-nav');
+      e.preventDefault();
+
+      // Update active state
+      navItems.forEach(el => el.classList.remove('active'));
+      item.classList.add('active');
+
+      // Close mobile menu if open
+      const drawer = document.querySelector('.nav-mobile-drawer');
+      if (drawer) drawer.remove();
+      navMobileToggle.textContent = '☰';
+
+      // Handle navigation
+      if (nav === 'home') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else if (nav === 'analyzer') {
+        window.location.href = 'index.html#analyzer';
+      } else if (nav === 'how-it-works') {
+        window.location.href = 'How-It-Works.html';
+      } else if (nav === 'about') {
+        aboutModal.style.display = 'flex';
+      }
+    });
+  });
+
+  // ── Brand button — go home ──
+  navBrandBtn.addEventListener('click', () => {
+    navItems.forEach(el => el.classList.remove('active'));
+    navItems[0].classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  // ── Mobile hamburger menu ──
+  navMobileToggle.addEventListener('click', () => {
+    let drawer = document.querySelector('.nav-mobile-drawer');
+    if (drawer) {
+      drawer.remove();
+      navMobileToggle.textContent = '☰';
+    } else {
+      drawer = document.createElement('div');
+      drawer.className = 'nav-mobile-drawer';
+
+      // Create mobile nav items
+      navItems.forEach(item => {
+        const btn = item.cloneNode(true);
+        btn.addEventListener('click', () => {
+          navItems.forEach(el => el.classList.remove('active'));
+          document.querySelector('.nav-item[data-nav="' + item.getAttribute('data-nav') + '"]').classList.add('active');
+          drawer.remove();
+          navMobileToggle.textContent = '☰';
+          item.click();
+        });
+        drawer.appendChild(btn);
+      });
+
+      // Add CTA button
+      const cta = document.querySelector('.nav-cta').cloneNode(true);
+      drawer.appendChild(cta);
+
+      topNav.appendChild(drawer);
+      navMobileToggle.textContent = '✕';
+    }
+  });
+
+  // ── Modal handlers ──
+  const closeModal = () => {
+    aboutModal.style.display = 'none';
+  };
+
+  modalClose.addEventListener('click', closeModal);
+  modalOverlay.addEventListener('click', closeModal);
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && aboutModal.style.display === 'flex') {
+      closeModal();
+    }
+  });
+
+  document.querySelector('.modal-content').addEventListener('click', (e) => {
+    e.stopPropagation();
+  });
+
+  // ── Set active state on page load ──
+  navItems[0].classList.add('active');
+})();
+</script>
 
 </body>
 </html>

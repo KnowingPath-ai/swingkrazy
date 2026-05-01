@@ -35,6 +35,21 @@ body {
   overflow-x: hidden;
   line-height: 1.65;
   font-size: 15px;
+  position: relative;
+}
+
+/* Owl watermark background — faint branding */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url('../src/assets/blue-owl-o15.png');
+  background-size: 45%;
+  background-repeat: no-repeat;
+  background-position: center center;
+  opacity: 0.05;
+  pointer-events: none;
+  z-index: -1;
 }
 
 ::-webkit-scrollbar { width: 5px; }

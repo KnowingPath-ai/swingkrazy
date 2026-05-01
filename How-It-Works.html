@@ -34,6 +34,21 @@
       background-attachment: fixed;
       color: var(--text);
       line-height: 1.65;
+      position: relative;
+    }
+
+    /* Owl watermark background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url('./src/assets/blue-owl-o15.png');
+      background-size: 45%;
+      background-repeat: no-repeat;
+      background-position: center center;
+      opacity: 0.05;
+      pointer-events: none;
+      z-index: -1;
     }
 
     /* Navigation */
@@ -69,7 +84,7 @@
     .nav-meta { font-size: 0.8rem; color: var(--muted); }
 
     /* Main content */
-    main { max-width: 900px; margin: 0 auto; padding: 4rem 2rem; }
+    main { max-width: 900px; margin: 0 auto; padding: 5.5rem 2rem 4rem 2rem; }
 
     /* Hero Section */
     .hero {
@@ -343,9 +358,461 @@
       margin: 0 0.25rem;
       vertical-align: middle;
     }
+
+    /* Top Menu Bar */
+    .top-menu-bar {
+      position: sticky; top: 0; z-index: 101;
+      background: rgba(5,9,18,0.95);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+    }
+
+    .top-menu-container {
+      display: flex;
+      gap: 2rem;
+      max-width: 100%;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .top-menu-container::-webkit-scrollbar { display: none; }
+
+    .top-menu-item {
+      display: inline-block;
+      padding: 0.75rem 0;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--muted);
+      text-decoration: none;
+      white-space: nowrap;
+      transition: color 0.15s, border-color 0.15s;
+      border-bottom: 2px solid transparent;
+      position: relative;
+    }
+    .top-menu-item:hover {
+      color: var(--accent);
+    }
+    .top-menu-item.active {
+      color: var(--text);
+      border-bottom-color: var(--accent);
+    }
+
+    /* Modal */
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    .modal-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(4px);
+    }
+
+    .modal-content {
+      position: relative;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2.5rem;
+      max-width: 800px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+      animation: slideUp 0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      width: 32px;
+      height: 32px;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 1.5rem;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+    }
+    .modal-close:hover {
+      background: rgba(91,163,217,0.12);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Top Navigation Styling */
+    #topNav.scrolled {
+      padding: 0.75rem 2rem;
+      background: rgba(10, 15, 30, 0.92);
+      border-bottom-color: rgba(91,163,217,0.15);
+    }
+
+    .nav-desktop {
+      display: flex;
+      gap: 0.25rem;
+      align-items: center;
+    }
+
+    .nav-item {
+      background: none;
+      border: 1px solid transparent;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: #94A3B8;
+      padding: 0.5rem 0.875rem;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+      letter-spacing: 0.01em;
+    }
+
+    .nav-item:hover {
+      color: #E2E8F0;
+      background: rgba(91,163,217,0.06);
+    }
+
+    .nav-item.active {
+      background: rgba(91,163,217,0.10);
+      border-color: rgba(91,163,217,0.20);
+      color: #82C0EE;
+      font-weight: 600;
+    }
+
+    .nav-cta {
+      background: linear-gradient(135deg, #5BA3D9 0%, #3A7FAD 100%);
+      border: none;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8125rem;
+      font-weight: 700;
+      color: #0A0F1E;
+      padding: 0.5rem 1.25rem;
+      border-radius: 10px;
+      margin-left: 0.5rem;
+      transition: all 0.2s;
+      letter-spacing: 0.01em;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .nav-cta:hover {
+      background: linear-gradient(135deg, #82C0EE 0%, #5BA3D9 100%);
+      box-shadow: 0 4px 16px rgba(91,163,217,0.45);
+    }
+
+    .nav-mobile-toggle {
+      display: none !important;
+    }
+
+    .nav-mobile-drawer {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: rgba(10, 15, 30, 0.97);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(91,163,217,0.15);
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .nav-mobile-drawer .nav-item {
+      width: 100%;
+      text-align: left;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .nav-mobile-drawer .nav-cta {
+      margin-left: 0;
+      margin-top: 0.5rem;
+    }
+
+    @media (max-width: 768px) {
+      .nav-desktop { display: none; }
+      .nav-mobile-toggle { display: block !important; }
+
+      #topNav {
+        justify-content: space-between;
+      }
+    }
   </style>
 </head>
 <body>
+
+<!-- FIXED TOP NAVIGATION -->
+<nav id="topNav" style="
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  padding: 1.25rem 2rem;
+  background: rgba(10, 15, 30, 0.65);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid transparent;
+  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+">
+  <!-- LEFT: Logo + Brand -->
+  <button id="navBrandBtn" style="
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+  ">
+    <svg width="44" height="44" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="22" cy="22" r="21" fill="rgba(91,163,217,0.12)" stroke="rgba(91,163,217,0.40)" stroke-width="1"/>
+      <path d="M8 30 Q22 10 36 30" stroke="#5BA3D9" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+      <path d="M12 30 L12 26" stroke="#D4A843" stroke-width="2" stroke-linecap="round"/>
+      <path d="M18 30 L18 22" stroke="#D4A843" stroke-width="2" stroke-linecap="round"/>
+      <path d="M24 30 L24 19" stroke="#D4A843" stroke-width="2" stroke-linecap="round"/>
+      <path d="M30 30 L30 22" stroke="#D4A843" stroke-width="2" stroke-linecap="round"/>
+      <path d="M36 30 L36 26" stroke="#D4A843" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="22" cy="11" r="2.5" fill="#5BA3D9" opacity="0.8"/>
+    </svg>
+    <div style="text-align: left;">
+      <div style="
+        font-family: 'Inter', sans-serif;
+        font-weight: 800;
+        font-size: 1rem;
+        color: #E2E8F0;
+        line-height: 1.2;
+        letter-spacing: -0.01em;
+      ">SwingKrazy</div>
+      <div style="
+        font-family: 'Inter', sans-serif;
+        font-style: italic;
+        font-size: 0.7rem;
+        color: #5BA3D9;
+        line-height: 1.2;
+      ">Golf Analysis</div>
+    </div>
+  </button>
+
+  <!-- CENTER/RIGHT: Nav Items + CTA -->
+  <div style="display: flex; gap: 0.25rem; align-items: center;" class="nav-desktop">
+    <button class="nav-item" data-nav="home">Home</button>
+    <button class="nav-item" data-nav="analyzer">Analyzer</button>
+    <button class="nav-item active" data-nav="how-it-works">How It Works</button>
+    <button class="nav-item" data-nav="about">About Us</button>
+    <a href="https://golfgametracker.netlify.app/" target="_blank" class="nav-cta">Golf Tracker Pro →</a>
+  </div>
+
+  <!-- Mobile Hamburger -->
+  <button id="navMobileToggle" class="nav-mobile-toggle" style="display: none; background: none; border: none; cursor: pointer; padding: 0.5rem; color: #E2E8F0; font-size: 1.5rem;">☰</button>
+</nav>
+
+<!-- About Us Modal -->
+<div id="aboutModal" class="modal" style="display:none;">
+  <div class="modal-overlay"></div>
+  <div class="modal-content" style="
+    max-width: 850px;
+    max-height: 90vh;
+    background: rgba(30,41,59,0.80) !important;
+    border: 1px solid rgba(91,163,217,0.20);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 40px rgba(91,163,217,0.25);
+  ">
+    <button class="modal-close">&times;</button>
+
+    <!-- Hero -->
+    <div style="margin-bottom: 2.5rem;">
+      <p style="
+        font-family: 'Inter', sans-serif;
+        font-size: 0.6875rem;
+        font-weight: 600;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: #5BA3D9;
+        margin-bottom: 0.875rem;
+      ">Who We Are</p>
+
+      <h2 style="
+        font-family: 'Inter', sans-serif;
+        font-size: 2rem;
+        font-weight: 800;
+        line-height: 1.2;
+        letter-spacing: -0.025em;
+        background: linear-gradient(135deg, #E2E8F0 0%, #B3D9F5 55%, #D4A843 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 1rem;
+      ">KnowingPath.ai Ecosystem</h2>
+
+      <p style="
+        font-family: 'Inter', sans-serif;
+        font-size: 1rem;
+        line-height: 1.7;
+        color: #94A3B8;
+        max-width: 720px;
+      ">
+        A privacy-first ecosystem of browser-based, locally-running AI tools. From not knowing to knowing, with compassion.
+      </p>
+    </div>
+
+    <!-- Pillars Grid -->
+    <div style="
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      margin-bottom: 2.5rem;
+    ">
+      <!-- Clarity -->
+      <div style="
+        background: rgba(15,23,41,0.60);
+        border: 1px solid rgba(91,163,217,0.16);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.20), 0 0 12px rgba(91,163,217,0.18);
+        position: relative;
+        overflow: hidden;
+        transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
+      " onMouseEnter="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 15px 45px rgba(0,0,0,0.55), 0 0 30px rgba(91,163,217,0.50)';" onMouseLeave="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(0,0,0,0.20), 0 0 12px rgba(91,163,217,0.18)';">
+        <div style="position: absolute; top: 0; left: 10%; right: 10%; height: 1px; background: linear-gradient(90deg, transparent, rgba(91,163,217,0.35), transparent);"></div>
+        <div style="width: 8px; height: 8px; border-radius: 50%; background: #5BA3D9; margin-bottom: 1rem; box-shadow: 0 0 10px rgba(91,163,217,0.60);"></div>
+        <h3 style="font-family: 'Inter', sans-serif; font-size: 1rem; font-weight: 700; color: #82C0EE; margin-bottom: 0.5rem;">Clarity</h3>
+        <p style="font-family: 'Inter', sans-serif; font-size: 0.9rem; line-height: 1.6; color: #94A3B8; margin: 0;">Deep, actionable insights from visual analysis without cloud uploads.</p>
+      </div>
+
+      <!-- Compassion -->
+      <div style="
+        background: rgba(15,23,41,0.60);
+        border: 1px solid rgba(212,168,67,0.14);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.20), 0 0 12px rgba(91,163,217,0.18);
+        position: relative;
+        overflow: hidden;
+        transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
+      " onMouseEnter="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 15px 45px rgba(0,0,0,0.55), 0 0 30px rgba(212,168,67,0.50)';" onMouseLeave="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(0,0,0,0.20), 0 0 12px rgba(91,163,217,0.18)';">
+        <div style="position: absolute; top: 0; left: 10%; right: 10%; height: 1px; background: linear-gradient(90deg, transparent, rgba(212,168,67,0.30), transparent);"></div>
+        <div style="width: 8px; height: 8px; border-radius: 50%; background: #D4A843; margin-bottom: 1rem; box-shadow: 0 0 10px rgba(212,168,67,0.60);"></div>
+        <h3 style="font-family: 'Inter', sans-serif; font-size: 1rem; font-weight: 700; color: #D4A843; margin-bottom: 0.5rem;">Compassion</h3>
+        <p style="font-family: 'Inter', sans-serif; font-size: 0.9rem; line-height: 1.6; color: #94A3B8; margin: 0;">Tools built to help you improve, not judge. Empowering growth at every step.</p>
+      </div>
+
+      <!-- Elevation -->
+      <div style="
+        background: rgba(15,23,41,0.60);
+        border: 1px solid rgba(91,163,217,0.16);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.20), 0 0 12px rgba(91,163,217,0.18);
+        position: relative;
+        overflow: hidden;
+        transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
+      " onMouseEnter="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 15px 45px rgba(0,0,0,0.55), 0 0 30px rgba(91,163,217,0.50)';" onMouseLeave="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(0,0,0,0.20), 0 0 12px rgba(91,163,217,0.18)';">
+        <div style="position: absolute; top: 0; left: 10%; right: 10%; height: 1px; background: linear-gradient(90deg, transparent, rgba(91,163,217,0.35), transparent);"></div>
+        <div style="width: 8px; height: 8px; border-radius: 50%; background: #5BA3D9; margin-bottom: 1rem; box-shadow: 0 0 10px rgba(91,163,217,0.60);"></div>
+        <h3 style="font-family: 'Inter', sans-serif; font-size: 1rem; font-weight: 700; color: #82C0EE; margin-bottom: 0.5rem;">Elevation</h3>
+        <p style="font-family: 'Inter', sans-serif; font-size: 0.9rem; line-height: 1.6; color: #94A3B8; margin: 0;">Empower your journey with insights that lead from not knowing to knowing.</p>
+      </div>
+
+      <!-- Privacy First -->
+      <div style="
+        background: rgba(15,23,41,0.60);
+        border: 1px solid rgba(212,168,67,0.14);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.20), 0 0 12px rgba(91,163,217,0.18);
+        position: relative;
+        overflow: hidden;
+        transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
+      " onMouseEnter="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 15px 45px rgba(0,0,0,0.55), 0 0 30px rgba(212,168,67,0.50)';" onMouseLeave="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(0,0,0,0.20), 0 0 12px rgba(91,163,217,0.18)';">
+        <div style="position: absolute; top: 0; left: 10%; right: 10%; height: 1px; background: linear-gradient(90deg, transparent, rgba(212,168,67,0.30), transparent);"></div>
+        <div style="width: 8px; height: 8px; border-radius: 50%; background: #D4A843; margin-bottom: 1rem; box-shadow: 0 0 10px rgba(212,168,67,0.60);"></div>
+        <h3 style="font-family: 'Inter', sans-serif; font-size: 1rem; font-weight: 700; color: #D4A843; margin-bottom: 0.5rem;">Privacy First</h3>
+        <p style="font-family: 'Inter', sans-serif; font-size: 0.9rem; line-height: 1.6; color: #94A3B8; margin: 0;">All computation runs locally in your browser. Your data stays with you, always.</p>
+      </div>
+    </div>
+
+    <!-- Featured Products -->
+    <div style="
+      background: rgba(30,41,59,0.70);
+      border-top: 1px solid rgba(91,163,217,0.15);
+      border-bottom: 1px solid rgba(91,163,217,0.15);
+      padding: 2rem;
+      margin: 2rem 0;
+    ">
+      <p style="
+        font-family: 'Inter', sans-serif;
+        font-size: 0.6875rem;
+        font-weight: 600;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: #D4A843;
+        margin-bottom: 1rem;
+      ">Our Tools</p>
+
+      <h3 style="
+        font-family: 'Inter', sans-serif;
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #E2E8F0;
+        margin-bottom: 1.5rem;
+      ">Flagship Ecosystem</h3>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        <div>
+          <p style="font-family: 'Inter', sans-serif; font-weight: 600; color: #82C0EE; margin-bottom: 0.5rem;">SwingKrazy</p>
+          <p style="font-family: 'Inter', sans-serif; font-size: 0.9rem; line-height: 1.6; color: #94A3B8; margin: 0;">Professional golf swing analysis. No uploads, no cloud dependency.</p>
+        </div>
+        <div>
+          <p style="font-family: 'Inter', sans-serif; font-weight: 600; color: #D4A843; margin-bottom: 0.5rem;">Golf Tracker Pro</p>
+          <p style="font-family: 'Inter', sans-serif; font-size: 0.9rem; line-height: 1.6; color: #94A3B8; margin: 0;">Track and analyze your on-course performance patterns.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer Text -->
+    <p style="
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      color: #64748B;
+      text-align: center;
+      margin: 0;
+    ">
+      © 2026 KnowingPath.ai · <strong>Private AI. See Everything. Share Nothing.</strong>
+    </p>
+  </div>
+</div>
 
 <!-- Navigation -->
 <nav>
@@ -930,6 +1397,114 @@ swingkrazy/raw-videos/CV-golf-analysis/<br/>
   </p>
   <p style="margin-top: 0.75rem;">All computation runs locally. Your videos never leave your computer.</p>
 </footer>
+
+<!-- Navigation & Modal Script -->
+<script>
+(function() {
+  const topNav = document.getElementById('topNav');
+  const navBrandBtn = document.getElementById('navBrandBtn');
+  const navItems = document.querySelectorAll('.nav-item');
+  const navMobileToggle = document.getElementById('navMobileToggle');
+  const aboutModal = document.getElementById('aboutModal');
+  const modalOverlay = document.querySelector('.modal-overlay');
+  const modalClose = document.querySelector('.modal-close');
+
+  // ── Scroll effect for nav styling ──
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 40) {
+      topNav.classList.add('scrolled');
+    } else {
+      topNav.classList.remove('scrolled');
+    }
+  }, { passive: true });
+
+  // ── Navigation item clicks ──
+  navItems.forEach(item => {
+    item.addEventListener('click', (e) => {
+      const nav = item.getAttribute('data-nav');
+      e.preventDefault();
+
+      // Update active state
+      navItems.forEach(el => el.classList.remove('active'));
+      item.classList.add('active');
+
+      // Close mobile menu if open
+      const drawer = document.querySelector('.nav-mobile-drawer');
+      if (drawer) drawer.remove();
+      navMobileToggle.textContent = '☰';
+
+      // Handle navigation
+      if (nav === 'home') {
+        window.location.href = 'index.html';
+      } else if (nav === 'analyzer') {
+        window.location.href = 'index.html#analyzer';
+      } else if (nav === 'how-it-works') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else if (nav === 'about') {
+        aboutModal.style.display = 'flex';
+      }
+    });
+  });
+
+  // ── Brand button — go home ──
+  navBrandBtn.addEventListener('click', () => {
+    window.location.href = 'index.html';
+  });
+
+  // ── Mobile hamburger menu ──
+  navMobileToggle.addEventListener('click', () => {
+    let drawer = document.querySelector('.nav-mobile-drawer');
+    if (drawer) {
+      drawer.remove();
+      navMobileToggle.textContent = '☰';
+    } else {
+      drawer = document.createElement('div');
+      drawer.className = 'nav-mobile-drawer';
+
+      // Create mobile nav items
+      navItems.forEach(item => {
+        const btn = item.cloneNode(true);
+        btn.addEventListener('click', () => {
+          navItems.forEach(el => el.classList.remove('active'));
+          document.querySelector('.nav-item[data-nav="' + item.getAttribute('data-nav') + '"]').classList.add('active');
+          drawer.remove();
+          navMobileToggle.textContent = '☰';
+          item.click();
+        });
+        drawer.appendChild(btn);
+      });
+
+      // Add CTA button
+      const cta = document.querySelector('.nav-cta').cloneNode(true);
+      drawer.appendChild(cta);
+
+      topNav.appendChild(drawer);
+      navMobileToggle.textContent = '✕';
+    }
+  });
+
+  // ── Modal handlers ──
+  const closeModal = () => {
+    aboutModal.style.display = 'none';
+  };
+
+  modalClose.addEventListener('click', closeModal);
+  modalOverlay.addEventListener('click', closeModal);
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && aboutModal.style.display === 'flex') {
+      closeModal();
+    }
+  });
+
+  document.querySelector('.modal-content').addEventListener('click', (e) => {
+    e.stopPropagation();
+  });
+
+  // ── Set active state on page load (How-It-Works is active) ──
+  document.querySelector('.nav-item[data-nav="how-it-works"]').classList.add('active');
+})();
+</script>
 
 </body>
 </html>

@@ -1,5 +1,200 @@
 /* ── Golf Swing Analysis — App-specific styles ────────────────────────────── */
 
+/* ── Top Navigation Styling ───────────────────────────────────────────────── */
+#topNav {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+#topNav.scrolled {
+  padding: 0.75rem 2rem;
+  background: rgba(10, 15, 30, 0.92);
+  border-bottom-color: rgba(91,163,217,0.15);
+}
+
+.nav-desktop {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.nav-item {
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #94A3B8;
+  padding: 0.5rem 0.875rem;
+  border-radius: 8px;
+  transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
+  letter-spacing: 0.01em;
+}
+
+.nav-item:hover {
+  color: #E2E8F0;
+  background: rgba(91,163,217,0.06);
+}
+
+.nav-item.active {
+  background: rgba(91,163,217,0.08);
+  border-color: rgba(91,163,217,0.20);
+  color: #82C0EE;
+  font-weight: 600;
+}
+
+.nav-cta {
+  background: linear-gradient(135deg, #5BA3D9 0%, #3A7FAD 100%);
+  border: none;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #0A0F1E;
+  padding: 0.5rem 1.25rem;
+  border-radius: 8px;
+  margin-left: 0.5rem;
+  transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.nav-cta:hover {
+  background: linear-gradient(135deg, #82C0EE 0%, #5BA3D9 100%);
+  box-shadow: 0 8px 24px rgba(91,163,217,0.35);
+  transform: translateY(-1px);
+}
+
+.nav-mobile-toggle {
+  display: none !important;
+}
+
+.nav-mobile-drawer {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: rgba(10, 15, 30, 0.97);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(91,163,217,0.15);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.nav-mobile-drawer .nav-item {
+  width: 100%;
+  text-align: left;
+}
+
+.nav-mobile-drawer .nav-cta {
+  margin-left: 0;
+  margin-top: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .nav-desktop { display: none; }
+  .nav-mobile-toggle { display: block !important; }
+  #topNav { justify-content: space-between; }
+}
+
+/* ── Modal ───────────────────────────────────────────────────────────────────– */
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.modal-content {
+  position: relative;
+  background: rgba(30,41,59,0.85);
+  border: 1px solid rgba(91,163,217,0.20);
+  border-radius: 16px;
+  padding: 2.5rem;
+  max-width: 850px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 25px 65px rgba(0,0,0,0.5), 0 0 40px rgba(91,163,217,0.25);
+  animation: slideUp 0.4s cubic-bezier(0.22,1,0.36,1);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(91,163,217,0.3) transparent;
+}
+
+.modal-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+  background: rgba(91,163,217,0.3);
+  border-radius: 3px;
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(91,163,217,0.5);
+}
+
+.modal-close {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  width: 36px;
+  height: 36px;
+  background: rgba(91,163,217,0.06);
+  border: 1px solid rgba(91,163,217,0.20);
+  color: #94A3B8;
+  font-size: 1.5rem;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+  font-weight: 300;
+}
+
+.modal-close:hover {
+  background: rgba(91,163,217,0.12);
+  border-color: rgba(91,163,217,0.35);
+  color: #82C0EE;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* ── Tab Bar ──────────────────────────────────────────────────────────────── */
 .tab-bar {
   display: flex; gap: 0; overflow-x: auto;
