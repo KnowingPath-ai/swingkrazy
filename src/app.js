@@ -186,17 +186,6 @@ async function handleFileSelect(file, videoEl, fnEl, role) {
   try {
     await loadVideoFile(videoEl, file);
 
-    // ── Orientation validation ────────────────────────────────────────────
-    videoEl.dataset.isPortrait = videoEl.videoHeight > videoEl.videoWidth;
-    if (videoEl.dataset.isPortrait === 'true') {
-      showError(
-        `⚠️ Portrait video detected (${videoEl.videoWidth}×${videoEl.videoHeight}). ` +
-        `For best results, use a landscape (horizontal) video. ` +
-        `Pose detection works best with the golfer centered horizontally.`
-      );
-      return;
-    }
-
     if (role === 'user' && proVideoEl.src) analyzeBtn.disabled = false;
     if (role === 'pro'  && userVideoEl.src) analyzeBtn.disabled = false;
     // Enable analyze if only user video provided too
@@ -363,8 +352,10 @@ function drawPreviewFrame() {
 
   const rect = previewCanvasEl.parentElement?.getBoundingClientRect();
   if (rect?.width > 0) {
+    const frame = state.userFrames?.[0];
+    const aspectRatio = frame ? frame.canvasHeight / frame.canvasWidth : 0.5625;
     previewCanvasEl.width  = Math.round(rect.width);
-    previewCanvasEl.height = Math.round(rect.width * 0.5625);
+    previewCanvasEl.height = Math.round(rect.width * aspectRatio);
   }
 
   skeletonPreview.setUserPose(uFrame?.pose);
@@ -384,8 +375,10 @@ function drawOverlayFrame() {
   // Resize canvas to match container
   const rect = overlayCanvasEl.parentElement?.getBoundingClientRect();
   if (rect?.width > 0) {
+    const frame = state.userFrames?.[frameIdx];
+    const aspectRatio = frame ? frame.canvasHeight / frame.canvasWidth : 0.5625;
     overlayCanvasEl.width  = Math.round(rect.width);
-    overlayCanvasEl.height = Math.round(rect.width * 0.5625); // 16:9
+    overlayCanvasEl.height = Math.round(rect.width * aspectRatio);
   }
 
   const ctx = overlayCanvasEl.getContext('2d');

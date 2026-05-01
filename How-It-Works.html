@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SwingKrazy — How It Works | KnowingPath.ai</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --accent:     #5BA3D9;
+      --accentHi:   #82C0EE;
+      --gold:       #D4A843;
+      --goldHi:     #F0C855;
+      --text:       #E2E8F0;
+      --muted:      #94A3B8;
+      --dim:        #475569;
+      --bg:         #050912;
+      --bg2:        #0A0F1E;
+      --bg3:        #0F1729;
+      --border:     rgba(91,163,217,0.18);
+      --borderGold: rgba(212,168,67,0.25);
+      --card-bg:    rgba(10,15,30,0.75);
+    }
+
+    html, body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background:
+        radial-gradient(ellipse at 20% 50%, rgba(91,163,217,0.08) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 20%, rgba(212,168,67,0.05) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 100%, rgba(91,163,217,0.06) 0%, transparent 70%),
+        linear-gradient(180deg, #050912 0%, #0A0F1E 40%, #0F1729 100%);
+      background-attachment: fixed;
+      color: var(--text);
+      line-height: 1.65;
+    }
+
+    /* Navigation */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 2.5rem;
+      height: 64px;
+      background: rgba(5,9,18,0.88);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-left { display: flex; align-items: center; gap: 1rem; }
+    .logo-svg { width: 38px; height: 38px; }
+    .brand-text { font-size: 1rem; font-weight: 700; color: var(--text); }
+    .tagline { font-size: 0.65rem; color: var(--muted); font-weight: 500; letter-spacing: 0.05em; }
+    .nav-divider { width: 1px; height: 32px; background: var(--border); }
+    .nav-badge {
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: var(--gold);
+      border: 1px solid var(--borderGold);
+      padding: 0.35rem 0.75rem;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .nav-meta { font-size: 0.8rem; color: var(--muted); }
+
+    /* Main content */
+    main { max-width: 900px; margin: 0 auto; padding: 4rem 2rem; }
+
+    /* Hero Section */
+    .hero {
+      text-align: center;
+      margin-bottom: 5rem;
+    }
+
+    .eyebrow {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text);
+      background: rgba(212,168,67,0.15);
+      border: 1px solid var(--borderGold);
+      display: inline-block;
+      padding: 0.4rem 0.9rem;
+      border-radius: 20px;
+      margin-bottom: 1.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    h1 {
+      font-size: 2.6rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      margin-bottom: 0.75rem;
+      color: var(--text);
+    }
+
+    .hero-subtitle {
+      font-size: 1.1rem;
+      color: var(--muted);
+      margin-bottom: 2rem;
+      line-height: 1.5;
+    }
+
+    /* Section headers */
+    .section {
+      margin-bottom: 4rem;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .section-number {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--accent), var(--accentHi));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .section-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text);
+    }
+
+    /* Cards */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 32px rgba(91,163,217,0.12);
+      border-color: var(--accentHi);
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--accentHi);
+      margin-bottom: 0.75rem;
+    }
+
+    .card-text {
+      font-size: 0.95rem;
+      color: var(--text);
+      line-height: 1.7;
+    }
+
+    .card-list {
+      margin-top: 1rem;
+      margin-left: 1.5rem;
+    }
+
+    .card-list li {
+      margin-bottom: 0.5rem;
+      color: var(--text);
+    }
+
+    /* Step-by-step */
+    .steps {
+      display: grid;
+      gap: 1.5rem;
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 50px 1fr;
+      gap: 1.5rem;
+      padding: 1.5rem;
+      background: rgba(91,163,217,0.05);
+      border-left: 3px solid var(--accent);
+      border-radius: 8px;
+    }
+
+    .step-number {
+      width: 50px;
+      height: 50px;
+      background: var(--accent);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .step-content h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+    }
+
+    .step-content p {
+      font-size: 0.95rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* Highlight box */
+    .highlight {
+      background: rgba(212,168,67,0.08);
+      border: 1px solid var(--borderGold);
+      border-left: 3px solid var(--gold);
+      padding: 1.25rem;
+      border-radius: 8px;
+      margin: 1.5rem 0;
+    }
+
+    .highlight-title {
+      font-weight: 600;
+      color: var(--goldHi);
+      margin-bottom: 0.5rem;
+      font-size: 0.95rem;
+    }
+
+    .highlight-text {
+      color: var(--text);
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    /* Table */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-size: 0.9rem;
+    }
+
+    th {
+      text-align: left;
+      padding: 0.75rem;
+      background: rgba(91,163,217,0.08);
+      border-bottom: 2px solid var(--border);
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-size: 0.75rem;
+    }
+
+    td {
+      padding: 0.75rem;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    tr:hover { background: rgba(91,163,217,0.05); }
+
+    /* Definition list */
+    .definition-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .definition-term {
+      font-weight: 600;
+      color: var(--accentHi);
+      font-size: 0.95rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .definition-desc {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-left: 1rem;
+      padding-left: 1rem;
+      border-left: 2px solid var(--border);
+      margin-bottom: 1rem;
+    }
+
+    /* Buttons/CTA */
+    .cta-section {
+      text-align: center;
+      margin-top: 4rem;
+      padding: 2rem;
+      background: rgba(91,163,217,0.05);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+
+    .cta-text {
+      font-size: 1.1rem;
+      color: var(--text);
+      margin-bottom: 1.5rem;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 0.9rem 2rem;
+      background: linear-gradient(135deg, var(--accent), var(--accentHi));
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(91,163,217,0.3);
+    }
+
+    footer {
+      text-align: center;
+      padding: 3rem 2rem;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+      margin-top: 5rem;
+      font-size: 0.85rem;
+    }
+
+    .logo-inline {
+      display: inline-block;
+      margin: 0 0.25rem;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav>
+  <div class="nav-left">
+    <svg class="logo-svg" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <filter id="glow">
+          <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+          <feMerge>
+            <feMergeNode in="coloredBlur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
+      <circle cx="22" cy="22" r="21" fill="rgba(91,163,217,0.12)" stroke="rgba(91,163,217,0.40)" stroke-width="1"/>
+      <path d="M8 30 Q22 10 36 30" stroke="#5BA3D9" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+      <circle cx="12" cy="28" r="1.8" fill="#D4A843"/>
+      <circle cx="18" cy="30" r="1.8" fill="#D4A843"/>
+      <circle cx="24" cy="30" r="1.8" fill="#D4A843"/>
+      <circle cx="30" cy="30" r="1.8" fill="#D4A843"/>
+      <circle cx="36" cy="28" r="1.8" fill="#D4A843"/>
+      <circle cx="22" cy="11" r="2.5" fill="#5BA3D9" filter="url(#glow)"/>
+    </svg>
+    <div>
+      <div class="brand-text">KnowingPath.ai</div>
+      <div class="tagline">Clarity. Compassion. Elevation.</div>
+    </div>
+    <div class="nav-divider"></div>
+    <div class="nav-badge">SwingKrazy</div>
+  </div>
+  <div class="nav-meta">How It Works</div>
+</nav>
+
+<!-- Main Content -->
+<main>
+  <section class="hero">
+    <div class="eyebrow">📖 User Guide</div>
+    <h1>How SwingKrazy Works</h1>
+    <p class="hero-subtitle">
+      Upload your golf swing videos and get instant AI-powered feedback. No cloud, no uploads — everything stays on your computer.
+    </p>
+  </section>
+
+  <!-- Section 1: The Basics -->
+  <section class="section">
+    <div class="section-header">
+      <div class="section-number">1</div>
+      <h2 class="section-title">Understanding Golf Swing Phases</h2>
+    </div>
+    <p style="font-size: 0.95rem; color: var(--muted); margin-bottom: 1.5rem;">
+      Even if you don't play golf, SwingKrazy breaks down any swing into four key moments. Think of it like analyzing a dance move frame-by-frame.
+    </p>
+
+    <div class="card">
+      <div class="card-title">🏌️ Address</div>
+      <div class="card-text">
+        The starting position. The golfer stands still, facing the target, ready to begin the swing. This is the baseline — we measure everything relative to this moment.
+        <br><br>
+        <strong style="color: var(--accentHi);">Similar in other sports:</strong>
+        <br>⚾ <strong>Baseball:</strong> The batter's stance before the pitch arrives
+        <br>🎾 <strong>Tennis:</strong> Ready position, feet shoulder-width apart, knees bent
+        <br>🥊 <strong>Pickleball:</strong> The set position before returning serve
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📈 Top of Backswing</div>
+      <div class="card-text">
+        The golfer has wound up like a spring, bringing the club up and back. At this moment, the upper body is fully rotated away from the target. Maximum "coil" happens here.
+        <br><br>
+        <strong style="color: var(--accentHi);">Similar in other sports:</strong>
+        <br>⚾ <strong>Baseball:</strong> The moment before the bat starts forward (hands loaded, bat cocked back)
+        <br>🎾 <strong>Tennis:</strong> Backswing at ear height, shoulders coiled, ready to drive forward
+        <br>🥊 <strong>Pickleball:</strong> Paddle drawn back, shoulder rotated, coiled for the shot
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">⚡ Impact</div>
+      <div class="card-text">
+        The moment the club touches the ball. This is where power transfers to the ball. The golfer's position at impact determines the shot's direction and quality.
+        <br><br>
+        <strong style="color: var(--accentHi);">Similar in other sports:</strong>
+        <br>⚾ <strong>Baseball:</strong> The instant the bat meets the ball (contact point)
+        <br>🎾 <strong>Tennis:</strong> Racket face meets ball at the optimal height and angle
+        <br>🥊 <strong>Pickleball:</strong> Paddle contact with the ball (determines spin and direction)
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🎯 Finish</div>
+      <div class="card-text">
+        The follow-through position after impact. The swing is complete. A balanced finish indicates good control and energy transfer.
+        <br><br>
+        <strong style="color: var(--accentHi);">Similar in other sports:</strong>
+        <br>⚾ <strong>Baseball:</strong> Follow-through after contact (hands wrap around body, front leg stable)
+        <br>🎾 <strong>Tennis:</strong> Follow-through across body, weight transferred to front foot
+        <br>🥊 <strong>Pickleball:</strong> Follow-through with arm extended, body balanced and ready for next shot
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 2: What SwingKrazy Measures -->
+  <section class="section">
+    <div class="section-header">
+      <div class="section-number">2</div>
+      <h2 class="section-title">What Gets Measured</h2>
+    </div>
+    <p style="font-size: 0.95rem; color: var(--muted); margin-bottom: 1.5rem;">
+      SwingKrazy uses AI pose estimation to track 33 body landmarks (joints) and calculate precise angles.
+    </p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Metric</th>
+          <th>What It Measures</th>
+          <th>Why It Matters</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Hip Angle</strong></td>
+          <td>Rotation of the hips (pelvis)</td>
+          <td>Power generation starts from the ground up. Hip rotation drives the swing.</td>
+        </tr>
+        <tr>
+          <td><strong>Shoulder Angle</strong></td>
+          <td>Rotation of the shoulders</td>
+          <td>Shoulders follow hips. Good sequence = controlled, powerful swing.</td>
+        </tr>
+        <tr>
+          <td><strong>X-Factor</strong></td>
+          <td>Difference between shoulder and hip rotation</td>
+          <td>The "coil" — creates torque. Bigger difference = more potential power.</td>
+        </tr>
+        <tr>
+          <td><strong>Spine Tilt</strong></td>
+          <td>Angle of the spine from vertical</td>
+          <td>Affects balance and how the club approaches the ball.</td>
+        </tr>
+        <tr>
+          <td><strong>Wrist Hinge</strong></td>
+          <td>Angle at the wrist (club angle)</td>
+          <td>Controls club face angle and impact position.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="highlight">
+      <div class="highlight-title">💡 Compare to a Pro</div>
+      <div class="highlight-text">
+        SwingKrazy compares your angles at each phase to a professional golfer's swing. See exactly where your mechanics differ.
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 3: Access Sample Videos (Optional) -->
+  <section class="section">
+    <div class="section-header">
+      <div class="section-number">3</div>
+      <h2 class="section-title">Access Sample Videos (Optional)</h2>
+    </div>
+    <p style="font-size: 0.95rem; color: var(--muted); margin-bottom: 1.5rem;">
+      Want to test SwingKrazy before uploading your own videos? We provide sample professional and amateur swings to explore. Here's how to access them.
+    </p>
+
+    <div class="card">
+      <div class="card-title">📥 Getting Sample Videos — Clone the Repository</div>
+      <div class="card-text">
+        <p style="margin-bottom: 1rem;">
+          Choose one of these methods to get the sample videos:
+        </p>
+
+        <!-- Method 1: Command Line (HTTPS) -->
+        <div style="margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid rgba(91,163,217,0.1);">
+          <p style="color: var(--accentHi); font-weight: 600; margin-bottom: 0.5rem;">Method 1: Command Line (Easiest)</p>
+          <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 0.75rem;">
+            Use your terminal (Mac/Linux) or Command Prompt (Windows).
+          </p>
+          <ol style="color: var(--text); margin-left: 1.5rem; margin-bottom: 1rem; font-size: 0.9rem; line-height: 1.8;">
+            <li>Open Terminal/Command Prompt</li>
+            <li>Navigate to where you want to save the project:
+              <div style="background: rgba(5,9,18,0.9); border: 1px solid rgba(91,163,217,0.18); border-radius: 6px; padding: 0.75rem; font-family: 'Menlo', monospace; font-size: 0.8rem; color: #A8C7E8; overflow-x: auto; margin: 0.5rem 0;">cd ~/Documents</div>
+            </li>
+            <li>Run the clone command:
+              <div style="background: rgba(5,9,18,0.9); border: 1px solid rgba(91,163,217,0.18); border-radius: 6px; padding: 0.75rem; font-family: 'Menlo', monospace; font-size: 0.8rem; color: #A8C7E8; overflow-x: auto; margin: 0.5rem 0;">git clone https://github.com/KnowingPath-ai/swingkrazy.git</div>
+            </li>
+            <li>Wait for download to complete (includes sample videos)</li>
+            <li>Your videos are in: <code style="background: rgba(91,163,217,0.12); padding: 0.2em 0.4em; border-radius: 3px;">swingkrazy/raw-videos/CV-golf-analysis/</code></li>
+          </ol>
+        </div>
+
+        <!-- Method 2: GitHub Desktop -->
+        <div style="margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid rgba(91,163,217,0.1);">
+          <p style="color: var(--accentHi); font-weight: 600; margin-bottom: 0.5rem;">Method 2: GitHub Desktop (Most User-Friendly)</p>
+          <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 0.75rem;">
+            If you prefer a visual interface, use GitHub Desktop app.
+          </p>
+          <ol style="color: var(--text); margin-left: 1.5rem; margin-bottom: 1rem; font-size: 0.9rem; line-height: 1.8;">
+            <li>Download <a href="https://desktop.github.com" style="color: var(--accentHi);">GitHub Desktop</a></li>
+            <li>Sign in with your GitHub account</li>
+            <li>Click "File" → "Clone Repository"</li>
+            <li>Paste: <code style="background: rgba(91,163,217,0.12); padding: 0.2em 0.4em; border-radius: 3px;">https://github.com/KnowingPath-ai/swingkrazy.git</code></li>
+            <li>Choose where to save (e.g., Documents folder)</li>
+            <li>Click "Clone"</li>
+          </ol>
+        </div>
+
+        <!-- Method 3: Download ZIP -->
+        <div style="margin-bottom: 1rem;">
+          <p style="color: var(--accentHi); font-weight: 600; margin-bottom: 0.5rem;">Method 3: Download as ZIP (No Git Required)</p>
+          <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 0.75rem;">
+            If you don't have Git or GitHub Desktop installed.
+          </p>
+          <ol style="color: var(--text); margin-left: 1.5rem; font-size: 0.9rem; line-height: 1.8;">
+            <li>Visit <a href="https://github.com/KnowingPath-ai/swingkrazy" style="color: var(--accentHi);">github.com/KnowingPath-ai/swingkrazy</a></li>
+            <li>Click the green "Code" button (top right)</li>
+            <li>Click "Download ZIP"</li>
+            <li>Extract the ZIP file to your desired location</li>
+            <li>Sample videos are in: <code style="background: rgba(91,163,217,0.12); padding: 0.2em 0.4em; border-radius: 3px;">swingkrazy-main/raw-videos/CV-golf-analysis/</code></li>
+          </ol>
+        </div>
+
+        <div class="highlight" style="margin-top: 1.5rem;">
+          <div class="highlight-title">✅ All Methods Work</div>
+          <div class="highlight-text">
+            All three methods get you the same files. Choose whichever is easiest for you. Command Line is fastest if you're comfortable with it; GitHub Desktop is most visual; ZIP download requires no software installation.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📂 Folder Structure for Your Videos</div>
+      <div class="card-text">
+        <p style="margin-bottom: 1rem;">
+          <strong>Organize your videos for easy access:</strong>
+        </p>
+        <div style="background: rgba(5,9,18,0.9); border: 1px solid rgba(91,163,217,0.18); border-radius: 8px; padding: 1rem; font-family: 'Menlo', 'Consolas', monospace; font-size: 0.82rem; color: #A8C7E8; overflow-x: auto; margin: 1rem 0; line-height: 1.8;">
+MyGolfSwings/<br/>
+├── My Swings/<br/>
+│   ├── 2024-12-15_practice_session.mp4<br/>
+│   ├── 2024-12-20_lesson_followup.mp4<br/>
+│   └── 2024-12-25_progress_check.mp4<br/>
+├── Pro Reference Swings/<br/>
+│   ├── Tiger_Woods_driver.mp4<br/>
+│   ├── Rory_McIlroy_iron.mp4<br/>
+│   └── Local_Coach_Example.mp4<br/>
+└── Analysis Results/<br/>
+    ├── 2024-12-15_analysis.pdf<br/>
+    └── 2024-12-20_analysis.pdf
+        </div>
+        <p style="color: var(--muted); font-size: 0.9rem; margin-top: 1rem;">
+          <strong>Why this structure?</strong> Keep your videos organized by type, making it easy to find "My Swings" when uploading, and "Pro Reference Swings" for comparisons. Store analysis PDFs separately for record-keeping.
+        </p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">⭐ Sample Videos in the Repository</div>
+      <div class="card-text">
+        <p style="margin-bottom: 1rem;">
+          Once you've cloned the repo, sample videos are organized in two folders:
+        </p>
+        <div style="background: rgba(5,9,18,0.9); border: 1px solid rgba(91,163,217,0.18); border-radius: 8px; padding: 1rem; font-family: 'Menlo', 'Consolas', monospace; font-size: 0.82rem; color: #A8C7E8; overflow-x: auto; margin: 1rem 0;">
+swingkrazy/raw-videos/CV-golf-analysis/<br/>
+├── pro/          (Professional golfer reference swings)<br/>
+└── amateur/      (Amateur golfer example swings)
+        </div>
+
+        <div style="margin-top: 1.5rem;">
+          <div class="definition-group">
+            <div class="definition-term">🏆 Pro Folder</div>
+            <div class="definition-desc">
+              Contains reference swings from professional golfers. Use these as your comparison standard. These videos show optimal swing mechanics and technique.
+            </div>
+          </div>
+
+          <div class="definition-group">
+            <div class="definition-term">⛳ Amateur Folder</div>
+            <div class="definition-desc">
+              <strong>Primary Use:</strong> Compare your amateur swing to a professional swing to identify what needs improvement and see the differences in mechanics.
+              <br><br>
+              <strong>Secondary Use:</strong> Compare your swing to another amateur's swing to analyze different approaches, see common patterns, or track progress over time by comparing against other golfers at your skill level.
+            </div>
+          </div>
+        </div>
+
+        <p style="color: var(--muted); font-size: 0.9rem; margin-top: 1.5rem;">
+          <strong>How to Use Both Folders:</strong>
+          <br>• <strong>Primary workflow:</strong> Upload your amateur swing + pro reference swing to see exactly what you need to improve
+          <br>• <strong>Alternative comparison:</strong> Upload your amateur swing + another amateur swing to compare at your own skill level and identify different techniques
+          <br>• <strong>Pro tip:</strong> Copy sample videos to your local folders for easy access when using the app
+        </p>
+      </div>
+    </div>
+
+    <div class="highlight">
+      <div class="highlight-title">🔗 GitHub Repository</div>
+      <div class="highlight-text">
+        <a href="https://github.com/KnowingPath-ai/swingkrazy" style="color: var(--accentHi); text-decoration: underline;">Visit the SwingKrazy Repository</a> — Download the project, explore the sample videos, and stay updated with the latest features and improvements.
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 4: Video Upload Workflow -->
+  <section class="section">
+    <div class="section-header">
+      <div class="section-number">4</div>
+      <h2 class="section-title">Upload Your Videos</h2>
+    </div>
+    <p style="font-size: 0.95rem; color: var(--muted); margin-bottom: 2rem;">
+      SwingKrazy requires two videos: your swing and a professional golfer's swing for comparison. Use sample videos from the repo or upload your own.
+    </p>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 3rem;">
+      <!-- Your Swing -->
+      <div class="card">
+        <div class="card-title">🎥 Your Swing</div>
+        <div class="card-text">
+          <p style="margin-bottom: 1rem;"><strong>What to film:</strong></p>
+          <ul class="card-list">
+            <li>Film from the side (90° angle to the target line)</li>
+            <li>Entire body visible in frame</li>
+            <li>Landscape orientation recommended</li>
+            <li>Steady camera (use tripod if possible)</li>
+            <li>Good lighting</li>
+            <li>1–3 full swings in one video</li>
+          </ul>
+          <p style="margin-top: 1rem; font-size: 0.85rem; color: var(--muted);">
+            <strong>File formats:</strong> MP4, MOV, or WebM. Recommended: MP4 for best browser compatibility.
+          </p>
+        </div>
+      </div>
+
+      <!-- Pro Swing -->
+      <div class="card">
+        <div class="card-title">⭐ Professional Golfer's Swing</div>
+        <div class="card-text">
+          <p style="margin-bottom: 1rem;"><strong>Where to get it:</strong></p>
+          <ul class="card-list">
+            <li>YouTube golf instruction videos</li>
+            <li>PGA Tour highlight videos</li>
+            <li>Golf instruction apps (Swing Profile, etc.)</li>
+            <li>Personal coaching video (if available)</li>
+          </ul>
+          <p style="margin-top: 1rem;"><strong>Same requirements:</strong></p>
+          <ul class="card-list">
+            <li>Side-on camera angle</li>
+            <li>Entire body visible</li>
+            <li>Similar height/build (or SwingKrazy will normalize)</li>
+          </ul>
+          <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(212,168,67,0.1); border-left: 2px solid var(--gold); border-radius: 6px;">
+            <p style="font-size: 0.9rem; color: var(--goldHi); font-weight: 600; margin-bottom: 0.5rem;">⭐ Strongly Suggested:</⭐></p>
+            <p style="font-size: 0.85rem; color: var(--text);">
+              Choose a professional golfer with a <strong>similar body build, height, and weight</strong> to yourself. Or pick your favorite golfer — analyzing against someone you admire is more motivating!
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-number">①</div>
+        <div class="step-content">
+          <h3>Open SwingKrazy</h3>
+          <p>Open the app in your web browser. You'll see two upload zones: one for "Your Swing" and one for "Pro Golfer's Swing".</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-number">②</div>
+        <div class="step-content">
+          <h3>Upload Your Swing Video</h3>
+          <p>Click the "Your Swing" upload area. Select your MP4 or MOV file (must be landscape or portrait, side-on view). The app will load the video.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-number">③</div>
+        <div class="step-content">
+          <h3>Upload Pro Reference Video</h3>
+          <p>Click the "Pro Golfer's Swing" upload area. Select a professional golfer's swing video in the same format.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-number">④</div>
+        <div class="step-content">
+          <h3>Click "Analyze"</h3>
+          <p>Once both videos are loaded, the "Analyze" button will appear. Click it. The app will process both videos frame-by-frame (this takes 30–60 seconds depending on video length).</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-number">⑤</div>
+        <div class="step-content">
+          <h3>Review Your Results</h3>
+          <p>See your swing broken down by phase, with metrics, skeleton overlays, and coaching cues. Compare yourself to the pro side-by-side.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 5: Understanding Your Results -->
+  <section class="section">
+    <div class="section-header">
+      <div class="section-number">5</div>
+      <h2 class="section-title">Your Results Dashboard</h2>
+    </div>
+    <p style="font-size: 0.95rem; color: var(--muted); margin-bottom: 1.5rem;">
+      After analysis, SwingKrazy displays your swing in multiple ways:
+    </p>
+
+    <div class="card">
+      <div class="card-title">📊 Phase Metrics Table</div>
+      <div class="card-text">
+        Shows your angle measurements at each phase (Address, Top, Impact, Finish) compared to the pro's angles. Green = good, yellow = needs work.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🦴 Skeleton Overlay</div>
+      <div class="card-text">
+        Your body is drawn as a stick figure on a canvas. The pro's skeleton is overlaid in a different color so you can see side-by-side how your positions differ at each phase.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🔥 Heatmap</div>
+      <div class="card-text">
+        Shows which joints moved the most during your swing. Red = maximum movement, blue = minimal movement. Reveals where energy is concentrated.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📈 Tempo Chart</div>
+      <div class="card-text">
+        Displays the ratio of backswing speed to downswing speed. Pro swings typically have a faster downswing than backswing.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">⚖️ Weight Shift</div>
+      <div class="card-text">
+        Tracks how your body's center of gravity moves through the swing. Shows if weight transfers correctly to generate power.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🎯 Coaching Cues</div>
+      <div class="card-text">
+        AI-generated tips based on your metrics. Example: "Your hip rotation at impact is 15° behind the pro. Try rotating more on the downswing."
+      </div>
+    </div>
+
+    <div class="highlight">
+      <div class="highlight-title">🔒 Privacy First</div>
+      <div class="highlight-text">
+        All analysis happens on your computer. Videos are never uploaded to the cloud. Your swing data stays private and never leaves your device.
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 6: Tips for Best Results -->
+  <section class="section">
+    <div class="section-header">
+      <div class="section-number">6</div>
+      <h2 class="section-title">Tips for Best Results</h2>
+    </div>
+
+    <div class="definition-group">
+      <div class="definition-term">📐 Camera Angle</div>
+      <div class="definition-desc">
+        Shoot from the <strong>side (90°)</strong>, not from behind or in front. The AI needs to see hip and shoulder rotation clearly. For fairness, film your pro reference video from the same angle.
+      </div>
+    </div>
+
+    <div class="definition-group">
+      <div class="definition-term">🌞 Lighting</div>
+      <div class="definition-desc">
+        Bright, even lighting helps the AI detect joints accurately. Avoid backlighting (sun behind the golfer). If indoors, use consistent overhead or side lighting.
+      </div>
+    </div>
+
+    <div class="definition-group">
+      <div class="definition-term">📱 Video Length</div>
+      <div class="definition-desc">
+        1–3 swings per video is ideal. Shorter videos process faster. Very long videos (5+ minutes) may take longer to analyze.
+      </div>
+    </div>
+
+    <div class="definition-group">
+      <div class="definition-term">👥 Body Visibility</div>
+      <div class="definition-desc">
+        The entire body must be visible (head to feet). Don't crop the frame. The AI tracks all joints, from head position to ankle angles.
+      </div>
+    </div>
+
+    <div class="definition-group">
+      <div class="definition-term">📏 Similar Context</div>
+      <div class="definition-desc">
+        For fair comparison, choose a pro golfer of similar height and build. SwingKrazy normalizes for body size, but matching physical characteristics gives better insights.
+      </div>
+    </div>
+
+    <div class="definition-group">
+      <div class="definition-term">🎬 File Format</div>
+      <div class="definition-desc">
+        Use MP4 for maximum browser compatibility. MOV files (iPhone) work but may require conversion. WebM also works if already in that format.
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 7: Troubleshooting -->
+  <section class="section">
+    <div class="section-header">
+      <div class="section-number">7</div>
+      <h2 class="section-title">Troubleshooting</h2>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Video won't load</div>
+      <div class="card-text">
+        <strong>Try:</strong> Convert to MP4 format (use ffmpeg or a video converter). Check that the file is not corrupted. Ensure your browser is up-to-date (Edge, Chrome, Firefox).
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Analyze button is disabled</div>
+      <div class="card-text">
+        <strong>Why:</strong> Both videos must be loaded. Upload both "Your Swing" and "Pro Golfer's Swing" before clicking Analyze.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Skeleton looks wrong or distorted</div>
+      <div class="card-text">
+        <strong>Why:</strong> Poor lighting, motion blur, or the golfer is not fully visible in frame. Try filming in brighter conditions or from a steadier position. Ensure entire body is visible.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Analysis takes too long</div>
+      <div class="card-text">
+        <strong>Why:</strong> Long videos with many swings take longer to analyze. Try uploading a shorter clip. Processing time is proportional to video length.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Metrics don't seem right</div>
+      <div class="card-text">
+        <strong>Likely cause:</strong> Camera angle is not side-on, or the golfer is not fully visible. Re-film from a pure 90° side angle with the entire body in frame.
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section">
+    <p class="cta-text">Ready to analyze your swing?</p>
+    <a href="index.html" class="btn">Open SwingKrazy</a>
+  </section>
+
+</main>
+
+<!-- Footer -->
+<footer>
+  <p>
+    <svg class="logo-inline" width="16" height="16" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="22" cy="22" r="21" fill="rgba(91,163,217,0.12)" stroke="rgba(91,163,217,0.40)" stroke-width="1"/>
+      <path d="M8 30 Q22 10 36 30" stroke="#5BA3D9" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+      <circle cx="12" cy="28" r="1.8" fill="#D4A843"/>
+      <circle cx="18" cy="30" r="1.8" fill="#D4A843"/>
+      <circle cx="24" cy="30" r="1.8" fill="#D4A843"/>
+      <circle cx="30" cy="30" r="1.8" fill="#D4A843"/>
+      <circle cx="36" cy="28" r="1.8" fill="#D4A843"/>
+      <circle cx="22" cy="11" r="2.5" fill="#5BA3D9"/>
+    </svg>
+    SwingKrazy by KnowingPath.ai — <strong>Private AI. See Everything. Share Nothing.</strong>
+  </p>
+  <p style="margin-top: 0.75rem;">All computation runs locally. Your videos never leave your computer.</p>
+</footer>
+
+</body>
+</html>

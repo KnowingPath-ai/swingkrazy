@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Next Session Plan | KnowingPath.ai Golf CV</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background:
+        radial-gradient(ellipse at 20% 50%, rgba(91,163,217,0.08) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 20%, rgba(212,168,67,0.05) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 100%, rgba(91,163,217,0.06) 0%, transparent 70%),
+        linear-gradient(180deg, #050912 0%, #0A0F1E 40%, #0F1729 100%);
+      background-attachment: fixed;
+      color: #E2E8F0; min-height: 100vh; overflow-x: hidden;
+      line-height: 1.65; font-size: 15px;
+    }
+    :root {
+      --bg: #050912; --bg2: #0A0F1E;
+      --accent: #5BA3D9; --accentHi: #82C0EE;
+      --gold: #D4A843; --goldHi: #F0C855;
+      --text: #E2E8F0; --muted: #94A3B8; --dim: #475569;
+      --border: rgba(91,163,217,0.18); --borderGold: rgba(212,168,67,0.25);
+      --success: #34D399; --warning: #FBBF24; --danger: #FCA5A5;
+      --card-bg: rgba(10,15,30,0.75);
+    }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: #050912; }
+    ::-webkit-scrollbar-thumb { background: rgba(91,163,217,0.35); border-radius: 3px; }
+
+    h1 { font-size: 2.2rem; font-weight: 800; letter-spacing: -0.03em; line-height: 1.15; }
+    h2 { font-size: 1.4rem; font-weight: 700; letter-spacing: -0.02em; }
+    h3 { font-size: 1.05rem; font-weight: 600; }
+    h4 { font-size: 0.9rem; font-weight: 600; color: var(--accentHi); margin-bottom: 0.4rem; }
+    p  { color: var(--muted); line-height: 1.7; margin-bottom: 0.6rem; }
+    code {
+      font-family: 'Menlo','Consolas',monospace; font-size: 0.82em;
+      background: rgba(91,163,217,0.12); color: var(--accentHi);
+      padding: 0.15em 0.45em; border-radius: 4px;
+      border: 1px solid rgba(91,163,217,0.2);
+    }
+    pre {
+      background: rgba(5,9,18,0.9); border: 1px solid var(--border);
+      border-radius: 10px; padding: 1rem 1.2rem;
+      font-family: 'Menlo','Consolas',monospace; font-size: 0.8rem;
+      line-height: 1.65; color: #A8C7E8; overflow-x: auto; margin: 0.6rem 0;
+    }
+    strong { color: var(--text); font-weight: 600; }
+
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2.5rem; height: 64px;
+      background: rgba(5,9,18,0.88); backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-brand { display: flex; align-items: center; gap: 0.75rem; }
+    .kp-logo-svg { width: 38px; height: 38px; flex-shrink: 0; filter: drop-shadow(0 0 8px rgba(91,163,217,0.45)); }
+    .nav-brand-text { display: flex; flex-direction: column; gap: 0.05rem; }
+    .nav-brand-name { font-weight: 700; font-size: 1rem; color: var(--text); letter-spacing: -0.01em; line-height: 1.2; }
+    .nav-brand-tagline { font-size: 0.68rem; font-style: italic; color: var(--accent); letter-spacing: 0.02em; }
+    .nav-divider { width: 1px; height: 28px; background: var(--border); margin: 0 0.25rem; }
+    .nav-tag {
+      font-size: 0.7rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--gold); background: rgba(212,168,67,0.12);
+      padding: 0.2em 0.7em; border-radius: 999px; border: 1px solid var(--borderGold);
+    }
+    .nav-meta { font-size: 0.78rem; color: var(--dim); }
+
+    .page { max-width: 1000px; margin: 0 auto; padding: 0 2rem 6rem; }
+
+    .hero {
+      padding: 3.5rem 0 2.5rem; border-bottom: 1px solid var(--border);
+      margin-bottom: 2.5rem; text-align: center;
+    }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      font-size: 0.72rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--gold); background: rgba(212,168,67,0.1);
+      padding: 0.35em 0.9em; border-radius: 999px; border: 1px solid var(--borderGold);
+      margin-bottom: 1.25rem;
+    }
+    .hero h1 {
+      background: linear-gradient(135deg, #E2E8F0 0%, var(--accentHi) 50%, var(--gold) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      margin-bottom: 0.75rem;
+    }
+    .hero-sub { font-size: 1rem; color: var(--muted); max-width: 620px; margin: 0 auto 1.25rem; }
+    .hero-meta { display: flex; gap: 1.5rem; flex-wrap: wrap; justify-content: center; }
+    .hero-meta-item { display: flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; color: var(--dim); }
+    .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 6px rgba(91,163,217,0.7); }
+    .dot.gold { background: var(--gold); box-shadow: 0 0 6px rgba(212,168,67,0.7); }
+
+    .section { margin-bottom: 2.5rem; }
+    .section-header {
+      display: flex; align-items: center; gap: 0.75rem;
+      margin-bottom: 1.25rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border);
+    }
+    .section-num {
+      width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0;
+      background: linear-gradient(135deg, rgba(91,163,217,0.2) 0%, rgba(91,163,217,0.08) 100%);
+      border: 1px solid rgba(91,163,217,0.3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.78rem; font-weight: 700; color: var(--accent);
+    }
+    .section-num.gold {
+      background: linear-gradient(135deg, rgba(212,168,67,0.2) 0%, rgba(212,168,67,0.08) 100%);
+      border-color: rgba(212,168,67,0.3); color: var(--gold);
+    }
+    .section-header h2 { color: var(--text); margin: 0; }
+
+    .card {
+      background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.4rem; margin-bottom: 1rem;
+    }
+    .card-gold { border-color: var(--borderGold); background: rgba(212,168,67,0.04); }
+    .card-urgent { border-color: rgba(91,163,217,0.4); background: rgba(91,163,217,0.05); }
+    .card h3 { color: var(--text); margin-bottom: 0.6rem; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    @media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } h1 { font-size: 1.7rem; } }
+
+    .badge {
+      display: inline-flex; align-items: center;
+      font-size: 0.67rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 0.22em 0.65em; border-radius: 999px; border: 1px solid;
+    }
+    .badge-green { color: var(--success); background: rgba(52,211,153,0.12); border-color: rgba(52,211,153,0.3); }
+    .badge-gold  { color: var(--gold); background: rgba(212,168,67,0.12); border-color: var(--borderGold); }
+    .badge-blue  { color: var(--accent); background: rgba(91,163,217,0.12); border-color: rgba(91,163,217,0.3); }
+    .badge-red   { color: var(--danger); background: rgba(252,165,165,0.12); border-color: rgba(252,165,165,0.3); }
+    .badge-warn  { color: var(--warning); background: rgba(251,191,36,0.12); border-color: rgba(251,191,36,0.3); }
+
+    /* ── Task List with Checkboxes ── */
+    .task-list { list-style: none; padding: 0; }
+    .task-list li {
+      display: flex; align-items: flex-start; gap: 0.65rem;
+      padding: 0.55rem 0.75rem; border-radius: 8px;
+      border-bottom: 1px solid rgba(91,163,217,0.06);
+      font-size: 0.84rem; color: var(--muted);
+      transition: background 0.1s;
+    }
+    .task-list li:last-child { border-bottom: none; }
+    .task-list li:hover { background: rgba(91,163,217,0.05); }
+    .task-list li input[type="checkbox"] {
+      margin-top: 0.15rem; flex-shrink: 0;
+      width: 15px; height: 15px; cursor: pointer;
+      accent-color: var(--accent);
+    }
+    .task-list li.done { opacity: 0.45; }
+    .task-list li.done label { text-decoration: line-through; }
+    .task-list li label { cursor: pointer; flex: 1; line-height: 1.5; }
+    .task-list li label strong { color: var(--text); }
+    .task-tag {
+      font-size: 0.62rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase;
+      padding: 0.15em 0.5em; border-radius: 4px; flex-shrink: 0; margin-top: 0.1rem;
+    }
+    .tag-p1 { background: rgba(212,168,67,0.15); color: var(--gold); }
+    .tag-p2 { background: rgba(91,163,217,0.15); color: var(--accent); }
+    .tag-p3 { background: rgba(52,211,153,0.15); color: var(--success); }
+    .tag-fix { background: rgba(252,165,165,0.15); color: var(--danger); }
+    .tag-rec { background: rgba(251,191,36,0.15); color: var(--warning); }
+
+    .priority-header {
+      display: flex; align-items: center; gap: 0.6rem;
+      margin-bottom: 0.75rem;
+    }
+    .priority-dot {
+      width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+    }
+
+    .glow-sep {
+      height: 1px; width: 100%; margin: 2rem 0;
+      background: linear-gradient(90deg, transparent 0%, rgba(91,163,217,0.4) 40%, rgba(212,168,67,0.3) 60%, transparent 100%);
+    }
+
+    .context-box {
+      background: rgba(5,9,18,0.6); border-left: 3px solid var(--accent);
+      border-radius: 0 8px 8px 0; padding: 0.75rem 1rem;
+      font-size: 0.82rem; color: var(--muted); margin: 0.6rem 0;
+    }
+    .context-box strong { color: var(--accentHi); }
+
+    footer {
+      text-align: center; padding: 2.5rem 1rem;
+      border-top: 1px solid var(--border); color: var(--dim); font-size: 0.8rem;
+    }
+    footer .footer-brand { font-size: 0.95rem; font-weight: 600; color: var(--muted); margin-bottom: 0.3rem; }
+    footer .footer-tagline { color: var(--dim); font-style: italic; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">
+    <svg class="kp-logo-svg" width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <circle cx="22" cy="22" r="21" fill="rgba(91,163,217,0.12)" stroke="rgba(91,163,217,0.40)" stroke-width="1"/>
+      <path d="M8 30 Q22 10 36 30" stroke="#5BA3D9" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+      <path d="M12 30 L12 26" stroke="#D4A843" stroke-width="2" stroke-linecap="round"/>
+      <path d="M18 30 L18 22" stroke="#D4A843" stroke-width="2" stroke-linecap="round"/>
+      <path d="M24 30 L24 19" stroke="#D4A843" stroke-width="2" stroke-linecap="round"/>
+      <path d="M30 30 L30 22" stroke="#D4A843" stroke-width="2" stroke-linecap="round"/>
+      <path d="M36 30 L36 26" stroke="#D4A843" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="22" cy="11" r="2.5" fill="#5BA3D9" opacity="0.8"/>
+    </svg>
+    <div class="nav-brand-text">
+      <span class="nav-brand-name">KnowingPath.ai</span>
+      <span class="nav-brand-tagline">Clarity. Compassion. Elevation.</span>
+    </div>
+    <div class="nav-divider"></div>
+    <span class="nav-tag">Golf CV</span>
+  </div>
+  <span class="nav-meta">Next Session Plan &nbsp;·&nbsp; Picks up from 2026-04-29</span>
+</nav>
+
+<div class="page">
+
+  <div class="hero">
+    <div class="hero-eyebrow">⛳ Golf Swing Analysis — What's Next</div>
+    <h1>Next Session Plan</h1>
+    <p class="hero-sub">Prioritized action list picking up where the April 29, 2026 session ended. App is code-complete (27/28 tasks done) and ready for first browser test.</p>
+    <div class="hero-meta">
+      <div class="hero-meta-item"><div class="dot"></div>Start with browser test</div>
+      <div class="hero-meta-item"><div class="dot gold"></div>1 Phase 4 task remaining</div>
+      <div class="hero-meta-item"><div class="dot"></div>4 open action items from Issue #1</div>
+    </div>
+  </div>
+
+  <div class="context-box">
+    <strong>Session context:</strong> All 23 source files are built and on disk. The app has NOT yet been tested in a browser.
+    The only remaining planned task is the full test suite. One video orientation bug was found and fixed. A clean reference video
+    (<code>aom-new-side-swing.mov</code>) was created. See
+    <code>updated_docs/WIP/saved-session-summaries/04292026-session-summary.html</code> for full details.
+  </div>
+
+  <div class="glow-sep"></div>
+
+  <!-- ── PRIORITY 1: FIRST BROWSER TEST ── -->
+  <div class="section" id="p1">
+    <div class="section-header">
+      <div class="section-num">P1</div>
+      <h2>First Browser Test — Do This First</h2>
+    </div>
+
+    <div class="card card-urgent">
+      <div class="priority-header">
+        <div class="priority-dot" style="background:var(--accent);box-shadow:0 0 8px rgba(91,163,217,0.8);"></div>
+        <h3 style="margin:0;">Start the HTTP server and open the app</h3>
+      </div>
+      <p>The app uses ES modules — it <strong>cannot</strong> be opened via <code>file://</code>. Must be served over HTTP.</p>
+      <pre># From the project root:
+cd c:\aom_NewXPS\ClaudeProjects\golf-swing-analysis
+python -m http.server 8080
+
+# Then open in Edge or Chrome:
+# http://localhost:8080</pre>
+      <ul class="task-list" style="margin-top:0.75rem;">
+        <li>
+          <input type="checkbox" id="bt-1" class="task-check">
+          <label for="bt-1"><strong>Start HTTP server</strong> — <code>python -m http.server 8080</code> from project root</label>
+        </li>
+        <li>
+          <input type="checkbox" id="bt-2" class="task-check">
+          <label for="bt-2"><strong>Open app</strong> at <code>http://localhost:8080</code> in Edge or Chrome — confirm all 7 tabs render</label>
+        </li>
+        <li>
+          <input type="checkbox" id="bt-3" class="task-check">
+          <label for="bt-3"><strong>Upload <code>aom-new-side-swing.mov</code></strong> as "Your Swing" — confirm video displays correctly (upright, portrait)</label>
+        </li>
+        <li>
+          <input type="checkbox" id="bt-4" class="task-check">
+          <label for="bt-4"><strong>Upload <code>StacyLewis-Side-Swing.MOV</code></strong> as "Pro Swing" — confirm video displays correctly (landscape)</label>
+        </li>
+        <li>
+          <input type="checkbox" id="bt-5" class="task-check">
+          <label for="bt-5"><strong>Click "Analyze Swing"</strong> — watch pose model load (BlazePose or MoveNet) and frame processing begin</label>
+        </li>
+        <li>
+          <input type="checkbox" id="bt-6" class="task-check">
+          <label for="bt-6"><strong>Verify Metrics tab</strong> — phase metrics table should populate with angle values and coaching cues</label>
+        </li>
+        <li>
+          <input type="checkbox" id="bt-7" class="task-check">
+          <label for="bt-7"><strong>Verify Scorecard tab</strong> — SQI ring should animate, sub-scores should appear</label>
+        </li>
+        <li>
+          <input type="checkbox" id="bt-8" class="task-check">
+          <label for="bt-8"><strong>Verify Overlays tab</strong> — skeleton overlay should show on canvas, scrubber should advance frames</label>
+        </li>
+        <li>
+          <input type="checkbox" id="bt-9" class="task-check">
+          <label for="bt-9"><strong>Check browser DevTools console</strong> — note any JS errors, failed imports, or model-load failures</label>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="glow-sep"></div>
+
+  <!-- ── PRIORITY 2: OPEN ACTION ITEMS FROM BUG #1 ── -->
+  <div class="section" id="p2">
+    <div class="section-header">
+      <div class="section-num">P2</div>
+      <h2>Open Action Items — Video Orientation Issue #1</h2>
+    </div>
+
+    <div class="card">
+      <p>These were flagged during the portrait video investigation. All are small code/copy additions.</p>
+      <ul class="task-list">
+        <li>
+          <span class="task-tag tag-fix">Fix</span>
+          <input type="checkbox" id="i1-a1" class="task-check" checked>
+          <label for="i1-a1">
+            <strong>Add portrait video warning banner</strong> — in <code>handleFileSelect</code> in <code>src/app.js</code>,
+            after <code>loadVideoFile</code> resolves, check <code>videoEl.videoHeight &gt; videoEl.videoWidth</code>
+            and call <code>showError()</code> with a friendly landscape guidance message
+          </label>
+        </li>
+        <li>
+          <span class="task-tag tag-fix">Fix</span>
+          <input type="checkbox" id="i1-a2" class="task-check" checked>
+          <label for="i1-a2">
+            <strong>Update upload hint text</strong> — change "MP4, MOV, WebM" hint in <code>index.html</code> upload zones
+            to also say "Landscape (horizontal) orientation recommended"
+          </label>
+        </li>
+        <li>
+          <span class="task-tag tag-rec">Rec</span>
+          <input type="checkbox" id="i1-a3" class="task-check" checked>
+          <label for="i1-a3">
+            <strong>Re-record user swing video in landscape</strong> — <code>aom-side-swing.MOV</code> was recorded portrait on iPhone.
+            Re-record face-on with phone held horizontally. File convention: <code>aom-face-on-MMDDYYYY.mov</code>
+          </label>
+        </li>
+        <li>
+          <span class="task-tag tag-fix">Fix</span>
+          <input type="checkbox" id="i1-a4" class="task-check" checked>
+          <label for="i1-a4">
+            <strong>Add orientation validation to pipeline</strong> — in <code>loadVideoFile</code>, after resolving,
+            attach <code>videoEl.dataset.isPortrait = videoEl.videoHeight &gt; videoEl.videoWidth</code>
+            so downstream code can read it without re-checking
+          </label>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="glow-sep"></div>
+
+  <!-- ── PRIORITY 3: REMAINING PHASE 4 TASK ── -->
+  <div class="section" id="p3">
+    <div class="section-header">
+      <div class="section-num">P3</div>
+      <h2>Phase 4 Remaining — Full Test Suite</h2>
+    </div>
+
+    <div class="card card-gold">
+      <p>This is the only unchecked item from the implementation plan. Three test files to create under <code>tests/</code>.</p>
+      <ul class="task-list">
+        <li>
+          <span class="task-tag tag-p1">Unit</span>
+          <input type="checkbox" id="ts-1" class="task-check">
+          <label for="ts-1">
+            <strong><code>tests/unit/MetricsEngine.test.js</code></strong> — known keypoints → known angle ±0.1°,
+            boundary: missing keypoints handled gracefully, all 5 metrics tested
+          </label>
+        </li>
+        <li>
+          <span class="task-tag tag-p1">Unit</span>
+          <input type="checkbox" id="ts-2" class="task-check">
+          <label for="ts-2">
+            <strong><code>tests/unit/PhaseDetector.test.js</code></strong> — synthetic swing sequence → correct phase boundaries,
+            short video graceful degradation, still sequence edge case
+          </label>
+        </li>
+        <li>
+          <span class="task-tag tag-p1">Unit</span>
+          <input type="checkbox" id="ts-3" class="task-check">
+          <label for="ts-3">
+            <strong><code>tests/unit/SQIEngine.test.js</code></strong> — all metrics in range → SQI = 100,
+            all metrics at worst → SQI = 0, weights sum to 1.0
+          </label>
+        </li>
+        <li>
+          <span class="task-tag tag-p2">Integ</span>
+          <input type="checkbox" id="ts-4" class="task-check">
+          <label for="ts-4">
+            <strong><code>tests/integration/SwingDB.test.js</code></strong> — save/retrieve round-trip,
+            50-record list, delete, clearAll, schema migration
+          </label>
+        </li>
+        <li>
+          <span class="task-tag tag-p2">Stress</span>
+          <input type="checkbox" id="ts-5" class="task-check">
+          <label for="ts-5">
+            <strong><code>tests/stress/FrameSampler.stress.js</code></strong> — 600-frame video &lt;90s,
+            no memory leak after 10 consecutive runs, cancel mid-analysis cleans up
+          </label>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="glow-sep"></div>
+
+  <!-- ── PRIORITY 4: POLISH & UX ── -->
+  <div class="section" id="p4">
+    <div class="section-header">
+      <div class="section-num">P4</div>
+      <h2>Polish &amp; UX Improvements</h2>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3>Manual Phase Override UI</h3>
+        <p>If automatic phase detection picks wrong frames, users need a way to drag the phase markers on the scrubber.</p>
+        <ul class="task-list">
+          <li>
+            <input type="checkbox" id="po-1" class="task-check">
+            <label for="po-1"><strong>Add draggable handles</strong> to the frame scrubber for each of the 4 key phases (Address / Top / Impact / Finish)</label>
+          </li>
+          <li>
+            <input type="checkbox" id="po-2" class="task-check">
+            <label for="po-2"><strong>Re-run metrics</strong> when handles are adjusted (re-compute from new phase indices)</label>
+          </li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Bugs Found During First Browser Test</h3>
+        <p>This section is intentionally empty — fill it in after running the app for the first time.</p>
+        <ul class="task-list">
+          <li>
+            <input type="checkbox" id="po-3" class="task-check">
+            <label for="po-3"><strong>Log any console errors</strong> from first browser test here</label>
+          </li>
+          <li>
+            <input type="checkbox" id="po-4" class="task-check">
+            <label for="po-4"><strong>Document any visual/layout issues</strong> found during first run</label>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="glow-sep"></div>
+
+  <!-- ── PRIORITY 5: MAIN MENU ── -->
+  <div class="section" id="p5">
+    <div class="section-header">
+      <div class="section-num">P5</div>
+      <h2>Add Menu to Main Index Page</h2>
+    </div>
+
+    <div class="card">
+      <p>The app currently launches directly into the 7-tab interface. Users need a clean entry point with menu options (Analyze, How It Works, Gallery, etc.).</p>
+      <ul class="task-list">
+        <li>
+          <span class="task-tag tag-p1">UI</span>
+          <input type="checkbox" id="p5-1" class="task-check">
+          <label for="p5-1">
+            <strong>Design main menu landing page</strong> — KnowingPath branding, 4–5 call-to-action buttons:
+            "Analyze Your Swing", "How It Works", "Gallery", "Settings", "About"
+          </label>
+        </li>
+        <li>
+          <span class="task-tag tag-p1">Code</span>
+          <input type="checkbox" id="p5-2" class="task-check">
+          <label for="p5-2">
+            <strong>Implement navigation logic</strong> — <code>main-menu.html</code> or add menu modal to <code>index.html</code>,
+            route to <code>#/analyze</code>, <code>#/how-it-works</code>, etc. via fragment or simple JS toggle
+          </label>
+        </li>
+        <li>
+          <span class="task-tag tag-p1">Link</span>
+          <input type="checkbox" id="p5-3" class="task-check">
+          <label for="p5-3">
+            <strong>"Analyze Your Swing" button</strong> — links to the 7-tab interface (current <code>index.html</code> content)
+          </label>
+        </li>
+        <li>
+          <span class="task-tag tag-p2">Link</span>
+          <input type="checkbox" id="p5-4" class="task-check">
+          <label for="p5-4">
+            <strong>"How It Works" button</strong> — links to new user manual (P6); opens in same page or modal
+          </label>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="glow-sep"></div>
+
+  <!-- ── PRIORITY 6: USER MANUAL & FAQ ── -->
+  <div class="section" id="p6">
+    <div class="section-header">
+      <div class="section-num">P6</div>
+      <h2>Create Searchable User Manual &amp; Q&amp;A</h2>
+    </div>
+
+    <div class="card card-gold">
+      <p>End-users need clear, non-technical documentation. This becomes the "How It Works" page accessible from the main menu.</p>
+      <ul class="task-list">
+        <li>
+          <span class="task-tag tag-p1">Doc</span>
+          <input type="checkbox" id="p6-1" class="task-check">
+          <label for="p6-1">
+            <strong>Phase Detection Explanation</strong> — user-friendly breakdown of Address, Top, Impact, Finish phases.
+            <strong>Include:</strong> what each phase is, why it matters, how the app auto-detects them, how to manually adjust if needed.
+            <strong>Detail level:</strong> enough for a golfer to understand, not biomechanics textbook.
+          </label>
+        </li>
+        <li>
+          <span class="task-tag tag-p1">Doc</span>
+          <input type="checkbox" id="p6-2" class="task-check">
+          <label for="p6-2">
+            <strong>Metrics Glossary</strong> — what is X-Factor? Hip rotation? Spine tilt? Why they matter. Ideal ranges at each phase.
+            Link to coaching theory where relevant.
+          </label>
+        </li>
+        <li>
+          <span class="task-tag tag-p1">Doc</span>
+          <input type="checkbox" id="p6-3" class="task-check">
+          <label for="p6-3">
+            <strong>Upload &amp; Analysis Walkthrough</strong> — step-by-step: upload your swing, upload pro swing, click Analyze, what to expect.
+            Tips on video orientation, lighting, camera distance.
+          </label>
+        </li>
+        <li>
+          <span class="task-tag tag-p1">Doc</span>
+          <input type="checkbox" id="p6-4" class="task-check">
+          <label for="p6-4">
+            <strong>FAQ Section</strong> — common questions: "Why portrait video doesn't work", "How do I compare to a different pro?",
+            "What if phase detection is wrong?", "How do I export my analysis?"
+          </label>
+        </li>
+        <li>
+          <span class="task-tag tag-p2">Feature</span>
+          <input type="checkbox" id="p6-5" class="task-check">
+          <label for="p6-5">
+            <strong>Search/Filter UI</strong> — searchable topics (Ctrl+F or search box),
+            collapsible sections, index of all topics. Keep it clean and navigable.
+          </label>
+        </li>
+        <li>
+          <span class="task-tag tag-p2">Code</span>
+          <input type="checkbox" id="p6-6" class="task-check">
+          <label for="p6-6">
+            <strong>Create <code>how-it-works.html</code></strong> — self-contained document (no external dependencies if possible),
+            styled to match KnowingPath brand, accessible from main menu and top nav.
+          </label>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="glow-sep"></div>
+
+  <!-- ── ROADMAP CONTEXT ── -->
+  <div class="section" id="roadmap">
+    <div class="section-header">
+      <div class="section-num gold">V4</div>
+      <h2>Longer-Term Roadmap (Not This Session)</h2>
+    </div>
+    <div class="card">
+      <p>These items are on the roadmap but are not blockers for the MVP. Complete browser testing and the test suite first.</p>
+      <ul class="task-list">
+        <li>
+          <input type="checkbox" id="rm-1" class="task-check">
+          <label for="rm-1"><strong>Webcam real-time mode</strong> — live pose estimation from <code>getUserMedia()</code> stream, real-time metric display (v4 feature)</label>
+        </li>
+        <li>
+          <input type="checkbox" id="rm-2" class="task-check">
+          <label for="rm-2"><strong>Swing plane lines overlay</strong> — visualize club path vs ideal plane angle (planned in spec, not yet built)</label>
+        </li>
+        <li>
+          <input type="checkbox" id="rm-3" class="task-check">
+          <label for="rm-3"><strong>Left-handed golfer support</strong> — mirrored keypoint interpretation, mirrored metric thresholds</label>
+        </li>
+        <li>
+          <input type="checkbox" id="rm-4" class="task-check">
+          <label for="rm-4"><strong>Model caching to IndexedDB</strong> — cache BlazePose weights after first load so the app works offline</label>
+        </li>
+        <li>
+          <input type="checkbox" id="rm-5" class="task-check">
+          <label for="rm-5"><strong>Down-the-line mode</strong> — separate metric thresholds and camera-to-target-line axis calibration for DTL recordings</label>
+        </li>
+        <li style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid rgba(212,168,67,0.2);">
+          <span style="display: inline-block; background: rgba(212,168,67,0.2); color: #D4A843; padding: 0.25em 0.6em; border-radius: 999px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; margin-right: 0.5rem;">Paid Tier</span>
+          <label style="margin-left: 0;"><strong>Sample Video Downloads (Option B)</strong> — In-app button to fetch pro/amateur reference swings from GitHub CDN or S3, eliminating need to clone repo. Streamlines Netlify-hosted user experience.</label>
+        </li>
+        <li>
+          <span style="display: inline-block; background: rgba(212,168,67,0.2); color: #D4A843; padding: 0.25em 0.6em; border-radius: 999px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; margin-right: 0.5rem;">Paid Tier</span>
+          <label style="margin-left: 0;"><strong>PDF Report Export (Professional)</strong> — One-click PDF generation with KnowingPath.ai branding, complete metrics table, skeleton overlays as images, heatmaps, tempo charts, and AI coaching summary. Phases: print-to-PDF (Phase 1), jsPDF with images (Phase 2), professional template (Phase 3).</label>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="glow-sep"></div>
+
+  <!-- ── QUICK REFERENCE ── -->
+  <div class="section" id="ref">
+    <div class="section-header">
+      <div class="section-num">📎</div>
+      <h2>Quick Reference</h2>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <h4>Key File Locations</h4>
+        <ul style="list-style:none;padding:0;font-size:0.82rem;color:var(--muted);">
+          <li><code>src/app.js</code> — main orchestrator</li>
+          <li><code>src/core/FrameSampler.js</code> — video load + frame loop</li>
+          <li><code>src/core/PoseEngine.js</code> — TF.js BlazePose/MoveNet</li>
+          <li><code>src/core/PhaseDetector.js</code> — 6-phase detection</li>
+          <li><code>src/core/MetricsEngine.js</code> — angle calculations</li>
+          <li><code>src/core/SQIEngine.js</code> — swing quality scorer</li>
+          <li><code>index.html</code> — 7-tab KP-branded shell</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>Key Commands</h4>
+        <pre style="margin:0;font-size:0.77rem;">
+# Run app
+python -m http.server 8080
+
+# Refresh ffmpeg PATH (if needed)
+$env:PATH = [System.Environment]::\
+  GetEnvironmentVariable("PATH","Machine")+";"+\
+  [System.Environment]::\
+  GetEnvironmentVariable("PATH","User")
+
+# Convert portrait video
+ffmpeg -i input.MOV -c:v libx264 \
+  -crf 23 -c:a aac \
+  -movflags +faststart \
+  -map_metadata -1 output.mov</pre>
+      </div>
+    </div>
+  </div>
+
+</div><!-- .page -->
+
+<footer>
+  <div class="footer-brand">KnowingPath.ai</div>
+  <div class="footer-tagline">From Not Knowing to Knowing, With Compassion</div>
+  <div style="margin-top:0.5rem;color:#2D3A50;font-size:0.7rem;">
+    © KnowingPath.ai &nbsp;·&nbsp; Golf Swing Analysis &nbsp;·&nbsp; Next Session Plan — from 2026-04-29
+  </div>
+</footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const KEY = 'kp-next-session-checks';
+  const saved = JSON.parse(localStorage.getItem(KEY) || '{}');
+  document.querySelectorAll('input[type="checkbox"].task-check').forEach(cb => {
+    if (saved[cb.id]) {
+      cb.checked = true;
+      const li = cb.closest('li');
+      if (li) li.classList.add('done');
+    }
+    cb.addEventListener('change', () => {
+      const state = JSON.parse(localStorage.getItem(KEY) || '{}');
+      state[cb.id] = cb.checked;
+      localStorage.setItem(KEY, JSON.stringify(state));
+      const li = cb.closest('li');
+      if (li) li.classList.toggle('done', cb.checked);
+    });
+  });
+});
+</script>
+
+</body>
+</html>

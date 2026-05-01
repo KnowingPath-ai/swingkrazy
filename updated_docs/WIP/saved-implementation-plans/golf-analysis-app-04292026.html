@@ -1,0 +1,1891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Golf Swing Analysis — Implementation Plan | KnowingPath.ai</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Reset & Base ────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background:
+        radial-gradient(ellipse at 20% 50%, rgba(91,163,217,0.08) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 20%, rgba(212,168,67,0.05) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 100%, rgba(91,163,217,0.06) 0%, transparent 70%),
+        linear-gradient(180deg, #050912 0%, #0A0F1E 40%, #0F1729 100%);
+      background-attachment: fixed;
+      color: #E2E8F0;
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.65;
+      font-size: 15px;
+    }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: #050912; }
+    ::-webkit-scrollbar-thumb { background: rgba(91,163,217,0.35); border-radius: 3px; }
+
+    /* ── Color Tokens ────────────────────────────────────────────────── */
+    :root {
+      --bg:        #050912;
+      --bg2:       #0A0F1E;
+      --bg3:       #0F1729;
+      --accent:    #5BA3D9;
+      --accentHi:  #82C0EE;
+      --gold:      #D4A843;
+      --goldHi:    #F0C855;
+      --text:      #E2E8F0;
+      --muted:     #94A3B8;
+      --dim:       #475569;
+      --border:    rgba(91,163,217,0.18);
+      --borderGold:rgba(212,168,67,0.25);
+      --success:   #34D399;
+      --warning:   #FBBF24;
+      --danger:    #FCA5A5;
+      --card-bg:   rgba(10,15,30,0.75);
+    }
+
+    /* ── Typography ──────────────────────────────────────────────────── */
+    h1 { font-size: 2.6rem; font-weight: 800; letter-spacing: -0.03em; line-height: 1.15; }
+    h2 { font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em; line-height: 1.25; }
+    h3 { font-size: 1.2rem;  font-weight: 600; letter-spacing: -0.01em; line-height: 1.35; }
+    h4 { font-size: 1rem;    font-weight: 600; letter-spacing: 0; }
+    p  { color: var(--muted); line-height: 1.7; margin-bottom: 0.75rem; }
+    a  { color: var(--accent); text-decoration: none; }
+    a:hover { color: var(--accentHi); }
+    code {
+      font-family: 'Menlo', 'Consolas', monospace;
+      font-size: 0.82em;
+      background: rgba(91,163,217,0.12);
+      color: var(--accentHi);
+      padding: 0.15em 0.45em;
+      border-radius: 4px;
+      border: 1px solid rgba(91,163,217,0.2);
+    }
+    strong { color: var(--text); font-weight: 600; }
+
+    /* ── Nav ─────────────────────────────────────────────────────────── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2.5rem;
+      height: 64px;
+      background: rgba(5,9,18,0.88);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-brand {
+      display: flex; align-items: center; gap: 0.75rem;
+      letter-spacing: -0.01em;
+    }
+    .nav-brand .kp-logo-svg {
+      width: 38px; height: 38px; flex-shrink: 0;
+      filter: drop-shadow(0 0 8px rgba(91,163,217,0.45));
+    }
+    .nav-brand-text { display: flex; flex-direction: column; gap: 0.05rem; }
+    .nav-brand-name {
+      font-weight: 700; font-size: 1rem; color: var(--text);
+      letter-spacing: -0.01em; line-height: 1.2;
+    }
+    .nav-brand-tagline {
+      font-size: 0.68rem; font-style: italic; color: var(--accent);
+      letter-spacing: 0.02em; line-height: 1;
+    }
+    .nav-divider {
+      width: 1px; height: 28px;
+      background: var(--border);
+      margin: 0 0.25rem;
+    }
+    .nav-tag {
+      font-size: 0.7rem; font-weight: 500; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--gold);
+      background: rgba(212,168,67,0.12);
+      padding: 0.2em 0.7em; border-radius: 999px;
+      border: 1px solid var(--borderGold);
+    }
+    .nav-meta { font-size: 0.78rem; color: var(--dim); }
+
+    /* ── Layout ──────────────────────────────────────────────────────── */
+    .page { max-width: 1100px; margin: 0 auto; padding: 0 2rem 6rem; }
+
+    /* ── Hero ────────────────────────────────────────────────────────── */
+    .hero {
+      padding: 4rem 0 3rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 3rem;
+      text-align: center;
+    }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      font-size: 0.72rem; font-weight: 600; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--gold);
+      background: rgba(212,168,67,0.1);
+      padding: 0.35em 0.9em; border-radius: 999px;
+      border: 1px solid var(--borderGold);
+      margin-bottom: 1.25rem;
+    }
+    .hero h1 {
+      background: linear-gradient(135deg, #E2E8F0 0%, var(--accentHi) 50%, var(--gold) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 1rem;
+    }
+    .hero-sub {
+      font-size: 1.05rem; color: var(--muted);
+      max-width: 680px; margin: 0 auto 1.5rem;
+    }
+    .hero-meta {
+      display: flex; gap: 1.5rem; flex-wrap: wrap;
+      justify-content: center;
+    }
+    .hero-meta-item {
+      display: flex; align-items: center; gap: 0.4rem;
+      font-size: 0.8rem; color: var(--dim);
+    }
+    .hero-meta-item .dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 6px rgba(91,163,217,0.7);
+    }
+
+    /* ── Section ─────────────────────────────────────────────────────── */
+    .section { margin-bottom: 3.5rem; }
+    .section-header {
+      display: flex; align-items: center; gap: 0.75rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .section-num {
+      width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0;
+      background: linear-gradient(135deg, rgba(91,163,217,0.2) 0%, rgba(91,163,217,0.08) 100%);
+      border: 1px solid rgba(91,163,217,0.3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.78rem; font-weight: 700; color: var(--accent);
+    }
+    .section-header h2 { color: var(--text); margin: 0; }
+
+    /* ── Cards ───────────────────────────────────────────────────────── */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      transition: box-shadow 0.2s cubic-bezier(0.4,0,0.2,1),
+                  border-color 0.2s cubic-bezier(0.4,0,0.2,1),
+                  transform 0.2s cubic-bezier(0.4,0,0.2,1);
+    }
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 45px rgba(0,0,0,0.55),
+                  0 0 30px rgba(91,163,217,0.25),
+                  0 0 60px rgba(91,163,217,0.10);
+      border-color: rgba(91,163,217,0.3);
+    }
+    .card-gold {
+      border-color: var(--borderGold);
+      background: rgba(212,168,67,0.04);
+    }
+    .card-gold:hover {
+      box-shadow: 0 15px 45px rgba(0,0,0,0.55),
+                  0 0 30px rgba(212,168,67,0.25),
+                  0 0 60px rgba(212,168,67,0.10);
+      border-color: rgba(212,168,67,0.4);
+    }
+    .card h3 { color: var(--text); margin-bottom: 0.6rem; }
+    .card h4 { color: var(--accentHi); margin-bottom: 0.4rem; font-size: 0.9rem; }
+
+    /* ── Grid ────────────────────────────────────────────────────────── */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+    @media (max-width: 768px) {
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      h1 { font-size: 1.9rem; }
+    }
+
+    /* ── Badge / Tag ─────────────────────────────────────────────────── */
+    .badge {
+      display: inline-flex; align-items: center;
+      font-size: 0.68rem; font-weight: 600; letter-spacing: 0.08em;
+      text-transform: uppercase; padding: 0.25em 0.7em;
+      border-radius: 999px; border: 1px solid;
+    }
+    .badge-blue  { color: var(--accent);   background: rgba(91,163,217,0.12); border-color: rgba(91,163,217,0.3); }
+    .badge-gold  { color: var(--gold);     background: rgba(212,168,67,0.12); border-color: var(--borderGold); }
+    .badge-green { color: var(--success);  background: rgba(52,211,153,0.12); border-color: rgba(52,211,153,0.3); }
+    .badge-warn  { color: var(--warning);  background: rgba(251,191,36,0.12); border-color: rgba(251,191,36,0.3); }
+    .badge-red   { color: var(--danger);   background: rgba(252,165,165,0.12); border-color: rgba(252,165,165,0.3); }
+
+    /* ── Pipeline Diagram ────────────────────────────────────────────── */
+    .pipeline {
+      display: flex; align-items: center; gap: 0; flex-wrap: wrap;
+      margin: 1.25rem 0;
+    }
+    .pipe-step {
+      background: rgba(91,163,217,0.1);
+      border: 1px solid rgba(91,163,217,0.3);
+      border-radius: 8px;
+      padding: 0.5rem 0.9rem;
+      font-size: 0.78rem; font-weight: 600; color: var(--accentHi);
+      white-space: nowrap;
+    }
+    .pipe-arrow {
+      color: var(--dim); font-size: 1.1rem; padding: 0 0.3rem;
+      flex-shrink: 0;
+    }
+
+    /* ── Table ───────────────────────────────────────────────────────── */
+    table {
+      width: 100%; border-collapse: collapse;
+      font-size: 0.85rem; margin: 1rem 0;
+    }
+    thead tr { border-bottom: 1px solid var(--border); }
+    thead th {
+      text-align: left; padding: 0.6rem 0.8rem;
+      font-size: 0.72rem; font-weight: 600; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--muted);
+    }
+    tbody tr { border-bottom: 1px solid rgba(91,163,217,0.07); }
+    tbody tr:hover { background: rgba(91,163,217,0.05); }
+    tbody td { padding: 0.6rem 0.8rem; color: var(--muted); vertical-align: top; }
+    tbody td:first-child { color: var(--text); font-weight: 500; }
+
+    /* ── Code Block ──────────────────────────────────────────────────── */
+    pre {
+      background: rgba(5,9,18,0.9);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.2rem 1.4rem;
+      font-family: 'Menlo', 'Consolas', monospace;
+      font-size: 0.8rem;
+      line-height: 1.65;
+      color: #A8C7E8;
+      overflow-x: auto;
+      margin: 0.75rem 0;
+    }
+    pre .kw { color: #82C0EE; font-weight: 600; }
+    pre .cm { color: #475569; font-style: italic; }
+    pre .st { color: #D4A843; }
+    pre .fn { color: #5BA3D9; }
+    pre .nm { color: #F0C855; }
+
+    /* ── Phase Timeline ──────────────────────────────────────────────── */
+    .phase-row {
+      display: flex; gap: 1px; margin: 1.25rem 0;
+    }
+    .phase-cell {
+      flex: 1; padding: 0.75rem 0.6rem;
+      background: rgba(91,163,217,0.06);
+      border: 1px solid rgba(91,163,217,0.15);
+      border-radius: 0; text-align: center;
+      font-size: 0.75rem; color: var(--muted);
+    }
+    .phase-cell:first-child { border-radius: 8px 0 0 8px; }
+    .phase-cell:last-child  { border-radius: 0 8px 8px 0; }
+    .phase-cell.active {
+      background: rgba(91,163,217,0.18);
+      border-color: rgba(91,163,217,0.4);
+      color: var(--accentHi);
+    }
+    .phase-cell strong { display: block; font-size: 0.88rem; color: var(--text); margin-bottom: 0.2rem; }
+
+    /* ── File Plan ───────────────────────────────────────────────────── */
+    .file-tag {
+      display: inline-block; font-size: 0.62rem; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 0.15em 0.55em; border-radius: 4px; margin-right: 0.4rem;
+    }
+    .file-tag.new  { background: rgba(52,211,153,0.15); color: var(--success); }
+    .file-tag.mod  { background: rgba(251,191,36,0.15); color: var(--warning); }
+    .file-tag.keep { background: rgba(91,163,217,0.12); color: var(--accent); }
+    .file-tag.del  { background: rgba(252,165,165,0.12); color: var(--danger); }
+    .file-item {
+      padding: 0.6rem 0; border-bottom: 1px solid rgba(91,163,217,0.06);
+      display: flex; align-items: flex-start; gap: 0.5rem;
+    }
+    .file-item:last-child { border-bottom: none; }
+    .file-path { font-family: 'Menlo','Consolas',monospace; font-size: 0.8rem; color: var(--accentHi); }
+    .file-desc { font-size: 0.8rem; color: var(--dim); margin-top: 0.15rem; }
+
+    /* ── Glow Separator ──────────────────────────────────────────────── */
+    .glow-sep {
+      height: 1px; width: 100%; margin: 2rem 0;
+      background: linear-gradient(90deg, transparent 0%, rgba(91,163,217,0.4) 40%, rgba(212,168,67,0.3) 60%, transparent 100%);
+    }
+
+    /* ── Summary Stat ────────────────────────────────────────────────── */
+    .stat-row { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+    .stat-box {
+      flex: 1; min-width: 130px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px; padding: 1rem 1.25rem;
+      text-align: center;
+    }
+    .stat-val { font-size: 1.8rem; font-weight: 800; color: var(--accent); line-height: 1; }
+    .stat-lbl { font-size: 0.72rem; color: var(--dim); margin-top: 0.3rem; text-transform: uppercase; letter-spacing: 0.07em; }
+
+    /* ── Checklist inline ─────────────────────────────────────────────── */
+    .checklist { list-style: none; padding: 0; }
+    .checklist li {
+      padding: 0.35rem 0 0.35rem 1.6rem;
+      position: relative; font-size: 0.85rem; color: var(--muted);
+      border-bottom: 1px solid rgba(91,163,217,0.05);
+    }
+    .checklist li::before {
+      content: '›';
+      position: absolute; left: 0.5rem;
+      color: var(--accent); font-weight: 700;
+    }
+    .checklist li strong { color: var(--text); }
+    .checklist li input[type="checkbox"] {
+      margin-right: 0.5rem; cursor: pointer;
+      accent-color: var(--accent);
+      width: 14px; height: 14px; vertical-align: middle;
+    }
+
+    /* ── Task Checkboxes (phase tables) ──────────────────────────────────── */
+    .task-check {
+      width: 16px; height: 16px; cursor: pointer;
+      accent-color: var(--accent); display: block; margin: 0 auto;
+    }
+    tr.done td { opacity: 0.45; }
+    tr.done td:first-child { text-decoration: line-through; }
+
+    /* ── Footer ──────────────────────────────────────────────────────── */
+    footer {
+      text-align: center;
+      padding: 2.5rem 1rem;
+      border-top: 1px solid var(--border);
+      color: var(--dim);
+      font-size: 0.8rem;
+      background: rgba(5,9,18,0.6);
+    }
+    footer .footer-brand {
+      font-size: 0.95rem; font-weight: 600; color: var(--muted); margin-bottom: 0.4rem;
+    }
+    footer .footer-tagline { color: var(--dim); font-style: italic; }
+
+    /* ── TOC ─────────────────────────────────────────────────────────── */
+    .toc {
+      background: var(--card-bg);
+      border: 1px solid var(--borderGold);
+      border-radius: 12px;
+      padding: 1.4rem 1.6rem;
+      margin-bottom: 2.5rem;
+    }
+    .toc h4 { color: var(--gold); margin-bottom: 0.9rem; font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase; }
+    .toc ol { padding-left: 1.2rem; }
+    .toc li { padding: 0.22rem 0; font-size: 0.85rem; }
+    .toc a { color: var(--muted); }
+    .toc a:hover { color: var(--accent); }
+  </style>
+</head>
+<body>
+
+<!-- ── NAVIGATION ──────────────────────────────────────────────────────── -->
+<nav>
+  <div class="nav-brand">
+    <!-- KnowingPath.ai — The Ascending Bridge (extracted from Layout.tsx KPLogo component) -->
+    <svg class="kp-logo-svg" width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <!-- Circle backdrop -->
+      <circle cx="22" cy="22" r="21" fill="rgba(91,163,217,0.12)" stroke="rgba(91,163,217,0.40)" stroke-width="1"/>
+      <!-- Bridge arc -->
+      <path d="M8 30 Q22 10 36 30" stroke="#5BA3D9" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+      <!-- Ascending pillars (gold) -->
+      <path d="M12 30 L12 26" stroke="#D4A843" stroke-width="2" stroke-linecap="round"/>
+      <path d="M18 30 L18 22" stroke="#D4A843" stroke-width="2" stroke-linecap="round"/>
+      <path d="M24 30 L24 19" stroke="#D4A843" stroke-width="2" stroke-linecap="round"/>
+      <path d="M30 30 L30 22" stroke="#D4A843" stroke-width="2" stroke-linecap="round"/>
+      <path d="M36 30 L36 26" stroke="#D4A843" stroke-width="2" stroke-linecap="round"/>
+      <!-- Glow dot at peak -->
+      <circle cx="22" cy="11" r="2.5" fill="#5BA3D9" opacity="0.8"/>
+    </svg>
+    <div class="nav-brand-text">
+      <span class="nav-brand-name">KnowingPath.ai</span>
+      <span class="nav-brand-tagline">Clarity. Compassion. Elevation.</span>
+    </div>
+    <div class="nav-divider"></div>
+    <span class="nav-tag">Golf CV</span>
+  </div>
+  <span class="nav-meta">Implementation Plan &nbsp;·&nbsp; April 29, 2026</span>
+</nav>
+
+<!-- ── PAGE WRAPPER ────────────────────────────────────────────────────── -->
+<div class="page">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow">⛳ Senior CV + Frontend Architecture</div>
+    <h1>Golf Swing Analysis<br/>Implementation Plan</h1>
+    <p class="hero-sub">
+      A complete architectural blueprint for a browser-local, pose-estimation–driven golf swing
+      analysis application — designed as a native KnowingPath.ai product.
+    </p>
+    <div class="hero-meta">
+      <div class="hero-meta-item"><div class="dot"></div>Generated: April 29, 2026</div>
+      <div class="hero-meta-item"><div class="dot"></div>Architecture: Vanilla JS + TF.js + OpenCV.js</div>
+      <div class="hero-meta-item"><div class="dot"></div>Storage: IndexedDB (browser-local)</div>
+      <div class="hero-meta-item"><div class="dot"></div>Branding: KnowingPath.ai Design System</div>
+    </div>
+  </div>
+
+  <!-- STATS ROW -->
+  <div class="stat-row">
+    <div class="stat-box"><div class="stat-val">7</div><div class="stat-lbl">UI Tabs</div></div>
+    <div class="stat-box"><div class="stat-val">18</div><div class="stat-lbl">Tracked Metrics</div></div>
+    <div class="stat-box"><div class="stat-val">6</div><div class="stat-lbl">Swing Phases</div></div>
+    <div class="stat-box"><div class="stat-val">5</div><div class="stat-lbl">Overlays</div></div>
+    <div class="stat-box"><div class="stat-val">4</div><div class="stat-lbl">Build Phases</div></div>
+    <div class="stat-box"><div class="stat-val">0</div><div class="stat-lbl">Server Calls</div></div>
+  </div>
+
+  <!-- TABLE OF CONTENTS -->
+  <div class="toc">
+    <h4>Table of Contents</h4>
+    <ol>
+      <li><a href="#s1">Template Analysis (kpaivision)</a></li>
+      <li><a href="#s2">Branding System</a></li>
+      <li><a href="#s3">Full System Architecture</a></li>
+      <li><a href="#s4">Metrics Engine Design</a></li>
+      <li><a href="#s5">Visualization Layer</a></li>
+      <li><a href="#s6">IndexedDB Storage Layer</a></li>
+      <li><a href="#s7">UI Shell — Tab Structure</a></li>
+      <li><a href="#s8">File-by-File Plan</a></li>
+      <li><a href="#s9">Implementation Phases</a></li>
+      <li><a href="#s10">Test Strategy</a></li>
+      <li><a href="#s11">Risk Register</a></li>
+      <li><a href="#s12">Known Issues &amp; Fixes Log</a></li>
+    </ol>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       SECTION 1 — TEMPLATE ANALYSIS
+  ═════════════════════════════════════════════════════════════════════ -->
+  <div class="section" id="s1">
+    <div class="section-header">
+      <div class="section-num">01</div>
+      <h2>Template Analysis — kpaivision</h2>
+    </div>
+
+    <p>The <code>kpaivision</code> application is a React-based, WebGPU-accelerated SmolVLM-500M vision-language app. Before architecting the golf app, we extract the patterns and modules worth reusing.</p>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3>Input Pipeline</h3>
+        <p>File upload or browser <code>getUserMedia()</code> webcam capture. Frame passed as an image bitmap to the HuggingFace transformer pipeline.</p>
+        <p><strong>Reuse:</strong> Camera capture pattern, input state management, loading lifecycle hooks.</p>
+      </div>
+      <div class="card">
+        <h3>Model Loading Lifecycle</h3>
+        <p><code>SmolVLMModelContext.jsx</code> manages async model warm-up, error handling, and progress reporting via React context.</p>
+        <p><strong>Reuse:</strong> Replace SmolVLM client with TF.js BlazePose/MoveNet loader using identical context pattern.</p>
+      </div>
+      <div class="card">
+        <h3>Safety / Monitoring Loop</h3>
+        <p><code>SafetyLoop.js</code> runs a continuous frame analysis loop with configurable interval. <code>useSafetyLoop</code> is a clean custom hook.</p>
+        <p><strong>Reuse:</strong> Adapt as <code>useSwingFrameLoop.js</code> — drives continuous pose estimation during video playback.</p>
+      </div>
+      <div class="card">
+        <h3>State Architecture</h3>
+        <p>React Context + custom hooks. <code>TrackerStore.js</code> manages presence-tracking state with thresholds and detection logic.</p>
+        <p><strong>Reuse:</strong> Replace presence-tracking state with swing-phase state machine using the same pattern.</p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:1rem;">
+      <h3>Module Classification</h3>
+      <table>
+        <thead><tr><th>Module</th><th>Action</th><th>Rationale</th></tr></thead>
+        <tbody>
+          <tr><td><code>VideoCapture/</code></td><td><span class="badge badge-green">Reuse</span></td><td>Camera input and media stream logic is identical</td></tr>
+          <tr><td><code>SmolVLMModelContext.jsx</code></td><td><span class="badge badge-warn">Extend</span></td><td>Replace with PoseModelContext loading BlazePose/MoveNet via TF.js</td></tr>
+          <tr><td><code>SafetyLoop.js</code></td><td><span class="badge badge-warn">Extend</span></td><td>Adapt to frame-by-frame video scrubbing loop for pose extraction</td></tr>
+          <tr><td><code>TrackerStore.js</code></td><td><span class="badge badge-warn">Extend</span></td><td>Replace presence state with swing-metrics state machine</td></tr>
+          <tr><td><code>VisionAnalyzer.jsx</code></td><td><span class="badge badge-warn">Extend</span></td><td>Restructure as tabbed SwingAnalyzer shell with canvas overlay</td></tr>
+          <tr><td><code>FaceEngine/</code></td><td><span class="badge badge-red">Replace</span></td><td>Replaced by PoseEngine (BlazePose / MoveNet) with golf keypoints</td></tr>
+          <tr><td><code>SafetyMonitor/</code></td><td><span class="badge badge-red">Remove</span></td><td>Not relevant to golf analysis domain</td></tr>
+          <tr><td><code>AlertBanner.jsx</code></td><td><span class="badge badge-warn">Extend</span></td><td>Repurpose as coaching cue banner for metric feedback</td></tr>
+          <tr><td><code>About.jsx / HowItWorks.jsx</code></td><td><span class="badge badge-warn">Extend</span></td><td>Rewrite as golf-specific onboarding and help content</td></tr>
+          <tr><td>Design tokens (KP constants)</td><td><span class="badge badge-green">Reuse</span></td><td>Identical to KnowingPath.ai brand system</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="glow-sep"></div>
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       SECTION 2 — BRANDING SYSTEM
+  ═════════════════════════════════════════════════════════════════════ -->
+  <div class="section" id="s2">
+    <div class="section-header">
+      <div class="section-num">02</div>
+      <h2>KnowingPath.ai Branding System</h2>
+    </div>
+
+    <p>All UI components must inherit the KnowingPath.ai design language. This section documents the exact tokens that must be enforced across the entire app.</p>
+
+    <div class="grid-3">
+      <div class="card card-gold">
+        <h4>Typography</h4>
+        <p><strong>Font Family:</strong> <code>'Inter', -apple-system, BlinkMacSystemFont, sans-serif</code></p>
+        <p><strong>Weights:</strong> 300 / 400 / 500 / 600 / 700 / 800</p>
+        <p><strong>Line height:</strong> 1.65 body · 1.25 headings</p>
+        <p><strong>Letter spacing:</strong> −0.03em (h1) → 0 (body)</p>
+      </div>
+      <div class="card card-gold">
+        <h4>Color Palette</h4>
+        <p><strong>Background:</strong> <code>#050912</code></p>
+        <p><strong>Accent blue:</strong> <code>#5BA3D9</code></p>
+        <p><strong>Accent hi:</strong> <code>#82C0EE</code></p>
+        <p><strong>Gold:</strong> <code>#D4A843</code></p>
+        <p><strong>Text:</strong> <code>#E2E8F0</code></p>
+        <p><strong>Muted:</strong> <code>#94A3B8</code></p>
+      </div>
+      <div class="card card-gold">
+        <h4>Effects &amp; Motion</h4>
+        <p><strong>Card hover glow:</strong> <code>0 15px 45px rgba(0,0,0,0.55), 0 0 30px rgba(91,163,217,0.50)</code></p>
+        <p><strong>Transition:</strong> <code>0.2s cubic-bezier(0.4,0,0.2,1)</code></p>
+        <p><strong>Button glow:</strong> <code>0 6px 22px rgba(91,163,217,0.60)</code></p>
+        <p><strong>Border-radius:</strong> 8–16px cards · 999px chips</p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:1rem;">
+      <h4>Background Gradient (body)</h4>
+      <pre>background:
+  radial-gradient(ellipse at 20% 50%, rgba(91,163,217,0.08) 0%, transparent 60%),
+  radial-gradient(ellipse at 80% 20%, rgba(212,168,67,0.05) 0%, transparent 50%),
+  radial-gradient(ellipse at 50% 100%, rgba(91,163,217,0.06) 0%, transparent 70%),
+  linear-gradient(180deg, #050912 0%, #0A0F1E 40%, #0F1729 100%);
+background-attachment: fixed;</pre>
+    </div>
+
+    <div class="grid-2" style="margin-top:1rem;">
+      <div class="card">
+        <h4>Logo Usage Rules</h4>
+        <ul class="checklist">
+          <li>Position: top-left of sticky navigation bar</li>
+          <li>Use gold-accent version when on dark backgrounds</li>
+          <li>Minimum padding: 12px on all sides</li>
+          <li>Never distort, recolor, or add effects to the logo</li>
+          <li>Accompanied by wordmark "KnowingPath.ai" in font-weight 700</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>Tone &amp; Copywriting</h4>
+        <ul class="checklist">
+          <li><strong>Calm</strong> — no alarming language around poor metrics</li>
+          <li><strong>Supportive</strong> — coaching cues as gentle guidance</li>
+          <li><strong>Clear</strong> — precise terminology without jargon overload</li>
+          <li><strong>Human-centered</strong> — "Your hip rotation" not "User hip angle"</li>
+          <li><strong>Footer required:</strong> © KnowingPath.ai — From Not Knowing to Knowing, With Compassion</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="glow-sep"></div>
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       SECTION 3 — FULL SYSTEM ARCHITECTURE
+  ═════════════════════════════════════════════════════════════════════ -->
+  <div class="section" id="s3">
+    <div class="section-header">
+      <div class="section-num">03</div>
+      <h2>Full System Architecture</h2>
+    </div>
+
+    <p>The application is entirely browser-local — zero server calls. The data pipeline flows from raw video through pose estimation, phase segmentation, metrics computation, and into the UI layer and IndexedDB persistence.</p>
+
+    <!-- Pipeline -->
+    <div class="card">
+      <h3>End-to-End Data Pipeline</h3>
+      <div class="pipeline">
+        <div class="pipe-step">Video Input</div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-step">Frame Sampler</div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-step">Pose Estimator</div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-step">Keypoint Store</div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-step">Phase Detector</div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-step">Metrics Engine</div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-step">Visualization</div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-step">IndexedDB</div>
+      </div>
+      <pre><span class="cm">// Core data shape flowing through the pipeline</span>
+<span class="kw">const</span> swingFrame = {
+  frameIndex: <span class="nm">42</span>,
+  timestamp:  <span class="nm">1.40</span>,            <span class="cm">// seconds</span>
+  pose: {
+    keypoints: [             <span class="cm">// 33 BlazePose landmarks</span>
+      { name: <span class="st">'left_hip'</span>, x: <span class="nm">0.48</span>, y: <span class="nm">0.62</span>, score: <span class="nm">0.97</span> },
+      <span class="cm">// ...</span>
+    ]
+  },
+  metrics: {
+    hipAngle:        <span class="nm">42.3</span>,    <span class="cm">// degrees</span>
+    shoulderAngle:   <span class="nm">78.1</span>,
+    xFactor:         <span class="nm">35.8</span>,
+    spineTilt:       <span class="nm">14.2</span>,
+    wristHinge:      <span class="nm">67.4</span>,
+    swingQualityIdx: <span class="nm">0.84</span>,
+  },
+  phase: <span class="st">'top'</span>               <span class="cm">// address | backswing | top | downswing | impact | finish</span>
+};</pre>
+    </div>
+
+    <!-- Component Architecture -->
+    <div class="card" style="margin-top:1rem;">
+      <h3>Component &amp; Module Architecture</h3>
+      <pre><span class="fn">golf-swing-analysis/</span>
+├── <span class="fn">index.html</span>              <span class="cm">— Entry point, KP-branded shell</span>
+├── <span class="fn">styles/</span>
+│   ├── <span class="fn">globals.css</span>         <span class="cm">— KnowingPath.ai design system (verbatim)</span>
+│   └── <span class="fn">app.css</span>             <span class="cm">— App-specific overrides</span>
+├── <span class="fn">src/</span>
+│   ├── <span class="fn">core/</span>               <span class="cm">— Pure logic, no DOM</span>
+│   │   ├── <span class="fn">PoseEngine.js</span>   <span class="cm">— TF.js BlazePose/MoveNet loader + inference</span>
+│   │   ├── <span class="fn">FrameSampler.js</span> <span class="cm">— Video seeked-event loop, frame extraction</span>
+│   │   ├── <span class="fn">PhaseDetector.js</span><span class="cm">— Heuristic phase segmentation (6 phases)</span>
+│   │   ├── <span class="fn">MetricsEngine.js</span><span class="cm">— All angle/tilt/ratio computations</span>
+│   │   ├── <span class="fn">SQIEngine.js</span>    <span class="cm">— Swing Quality Index scorer</span>
+│   │   └── <span class="fn">Normalizer.js</span>   <span class="cm">— Keypoint coordinate normalization</span>
+│   ├── <span class="fn">overlays/</span>           <span class="cm">— Canvas rendering modules</span>
+│   │   ├── <span class="fn">SkeletonOverlay.js</span>
+│   │   ├── <span class="fn">HeatmapOverlay.js</span>
+│   │   ├── <span class="fn">TempoChart.js</span>
+│   │   ├── <span class="fn">WeightShiftOverlay.js</span>
+│   │   └── <span class="fn">ClubPathOverlay.js</span>
+│   ├── <span class="fn">storage/</span>
+│   │   ├── <span class="fn">SwingDB.js</span>      <span class="cm">— IndexedDB wrapper (schema v1)</span>
+│   │   └── <span class="fn">TrendAggregator.js</span>
+│   ├── <span class="fn">ui/</span>                 <span class="cm">— DOM-manipulating UI components (vanilla JS)</span>
+│   │   ├── <span class="fn">TabRouter.js</span>
+│   │   ├── <span class="fn">ScoreCard.js</span>
+│   │   ├── <span class="fn">RadarChart.js</span>
+│   │   ├── <span class="fn">TrendGraph.js</span>
+│   │   ├── <span class="fn">MetricsTable.js</span>
+│   │   └── <span class="fn">CoachingCueBanner.js</span>
+│   └── <span class="fn">app.js</span>              <span class="cm">— App orchestrator, state machine</span>
+└── <span class="fn">tests/</span>
+    ├── <span class="fn">unit/</span>
+    ├── <span class="fn">integration/</span>
+    └── <span class="fn">stress/</span></pre>
+    </div>
+
+    <!-- Camera Config -->
+    <div class="grid-2" style="margin-top:1rem;">
+      <div class="card">
+        <h3>3.1 — Input &amp; Camera Configuration</h3>
+        <ul class="checklist">
+          <li><strong>Video formats:</strong> .mp4, .mov, .webm, .heic-converted</li>
+          <li><strong>Resolution target:</strong> 4K / 1080p; sample every 2nd frame for performance</li>
+          <li><strong>Camera view selector:</strong> Face-On | Down-the-Line toggle stored in state</li>
+          <li><strong>Orientation normalization:</strong> Auto-detect portrait vs landscape; rotate canvas if needed</li>
+          <li><strong>Pro swing slot:</strong> Second video input for side-by-side comparison</li>
+          <li><strong>Frame rate:</strong> Target 30 fps processing; degrade gracefully on low-end hardware</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>3.2 — Pose Estimation</h3>
+        <ul class="checklist">
+          <li><strong>Model:</strong> TF.js BlazePose (33 keypoints) primary; MoveNet Lightning fallback</li>
+          <li><strong>Keypoints used:</strong> Hips (23/24), Shoulders (11/12), Wrists (15/16), Ankles (27/28), Nose (0)</li>
+          <li><strong>Confidence threshold:</strong> Score ≥ 0.5 per keypoint; lower → interpolate from neighbors</li>
+          <li><strong>Normalization:</strong> Map to [0,1] canvas space; mirror if down-the-line (right-handed golfer)</li>
+          <li><strong>Sequence storage:</strong> Array of <code>swingFrame</code> objects, one per sampled frame</li>
+          <li><strong>WebGPU acceleration:</strong> Use TF.js WebGPU backend when available; fallback to WASM</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="glow-sep"></div>
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       SECTION 4 — METRICS ENGINE
+  ═════════════════════════════════════════════════════════════════════ -->
+  <div class="section" id="s4">
+    <div class="section-header">
+      <div class="section-num">04</div>
+      <h2>Metrics Engine Design</h2>
+    </div>
+
+    <!-- Swing Phase Timeline -->
+    <div class="card">
+      <h3>Swing Phase Detection — 6 Phases</h3>
+      <div class="phase-row">
+        <div class="phase-cell"><strong>Address</strong>Low variance window</div>
+        <div class="phase-cell"><strong>Backswing</strong>Shoulder rotation ↑</div>
+        <div class="phase-cell active"><strong>Top</strong>Max shoulder rotation</div>
+        <div class="phase-cell"><strong>Downswing</strong>Velocity reversal</div>
+        <div class="phase-cell"><strong>Impact</strong>Lead wrist → ball-line</div>
+        <div class="phase-cell"><strong>Finish</strong>Low variance settle</div>
+      </div>
+
+      <table>
+        <thead><tr><th>Phase</th><th>Detection Algorithm</th><th>Fallback</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Address</td>
+            <td>Sliding window (n=5 frames): hip + shoulder angle σ &lt; 5°</td>
+            <td>First frame of sequence</td>
+          </tr>
+          <tr>
+            <td>Backswing start</td>
+            <td>First frame after Address where shoulder angle deviates &gt; 8° from baseline</td>
+            <td>Frame after Address + 10</td>
+          </tr>
+          <tr>
+            <td>Top of Backswing</td>
+            <td>argmax(shoulderAngle) within first 70% of frames</td>
+            <td>Frame with max shoulder angle globally</td>
+          </tr>
+          <tr>
+            <td>Downswing</td>
+            <td>First frame after Top where shoulderAngle decreasing AND hipAngle increasing faster</td>
+            <td>Top + 3 frames</td>
+          </tr>
+          <tr>
+            <td>Impact</td>
+            <td>Lead wrist x-coord closest to ball-line x (recorded at Address); OR wrist y-velocity sign change</td>
+            <td>Frame at 50% of Top→Finish span</td>
+          </tr>
+          <tr>
+            <td>Finish</td>
+            <td>Last low-variance window after Impact: hip + shoulder σ &lt; 8° for n=3 frames</td>
+            <td>Last frame of sequence</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Core Metrics -->
+    <div class="card" style="margin-top:1rem;">
+      <h3>Core Metrics — Mathematical Definitions</h3>
+      <table>
+        <thead><tr><th>Metric</th><th>Formula</th><th>Address</th><th>Top</th><th>Impact</th><th>Finish</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Hip Rotation</td>
+            <td><code>atan2(LHIP.y - RHIP.y, LHIP.x - RHIP.x) × (180/π)</code></td>
+            <td>±5°</td>
+            <td>35–50°</td>
+            <td>&gt;80°</td>
+            <td>80–100°</td>
+          </tr>
+          <tr>
+            <td>Shoulder Rotation</td>
+            <td><code>atan2(LSHO.y - RSHO.y, LSHO.x - RSHO.x) × (180/π)</code></td>
+            <td>±5°</td>
+            <td>70–100°</td>
+            <td>varies</td>
+            <td>90–110°</td>
+          </tr>
+          <tr>
+            <td>X-Factor</td>
+            <td><code>shoulderAngle − hipAngle</code></td>
+            <td>—</td>
+            <td>20–40°</td>
+            <td>maintain</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td>Spine Tilt</td>
+            <td><code>atan2(PELVIS→CHEST) vs vertical</code></td>
+            <td>12–20°</td>
+            <td>12–20°</td>
+            <td>maintain</td>
+            <td>0–10°</td>
+          </tr>
+          <tr>
+            <td>Wrist Hinge</td>
+            <td><code>angle(forearm vector, hand vector) at lead wrist</code></td>
+            <td>0–10°</td>
+            <td>50–90°</td>
+            <td>hands ahead</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td>Swing Tempo</td>
+            <td><code>backswingFrames / downswingFrames</code></td>
+            <td>—</td>
+            <td>—</td>
+            <td>—</td>
+            <td>3:1 ideal</td>
+          </tr>
+          <tr>
+            <td>Weight Shift</td>
+            <td><code>(lead_ankle.x − trail_ankle.x) normalized: 0=trail, 1=lead</code></td>
+            <td>50/50</td>
+            <td>trail-heavy</td>
+            <td>lead-heavy</td>
+            <td>lead-heavy</td>
+          </tr>
+          <tr>
+            <td>SQI</td>
+            <td>Weighted composite of 7 sub-scores (each 0–1), normalized to 0–100</td>
+            <td colspan="4">Single session score</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- SQI Weights -->
+    <div class="card" style="margin-top:1rem;">
+      <h3>Swing Quality Index (SQI) — Weighting</h3>
+      <pre><span class="kw">const</span> SQI_WEIGHTS = {
+  hipRotation:     <span class="nm">0.20</span>,   <span class="cm">// most critical — power source</span>
+  shoulderRotation:<span class="nm">0.18</span>,
+  xFactor:         <span class="nm">0.18</span>,   <span class="cm">// coil = distance</span>
+  spineTilt:       <span class="nm">0.16</span>,   <span class="cm">// consistency + contact</span>
+  wristHinge:      <span class="nm">0.14</span>,
+  tempo:           <span class="nm">0.08</span>,
+  weightShift:     <span class="nm">0.06</span>,
+};
+
+<span class="kw">function</span> <span class="fn">computeSQI</span>(phaseMetrics) {
+  <span class="kw">let</span> score = <span class="nm">0</span>;
+  <span class="kw">for</span> (<span class="kw">const</span> [key, weight] <span class="kw">of</span> Object.entries(SQI_WEIGHTS)) {
+    score += weight * <span class="fn">normalizeMetric</span>(key, phaseMetrics[key]);
+  }
+  <span class="kw">return</span> Math.round(score * <span class="nm">100</span>); <span class="cm">// 0–100</span>
+}</pre>
+    </div>
+  </div>
+
+  <div class="glow-sep"></div>
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       SECTION 5 — VISUALIZATION LAYER
+  ═════════════════════════════════════════════════════════════════════ -->
+  <div class="section" id="s5">
+    <div class="section-header">
+      <div class="section-num">05</div>
+      <h2>Visualization Layer</h2>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3>1. Skeleton Overlay</h3>
+        <p>Dual-skeleton canvas: <strong>Your swing</strong> in KP blue (<code>#5BA3D9</code>), <strong>Pro swing</strong> in gold (<code>#D4A843</code>). Both normalized to same canvas space.</p>
+        <ul class="checklist">
+          <li>Draw 17 body segments (limb pairs)</li>
+          <li>Circle markers at each of 33 keypoints</li>
+          <li>Opacity proportional to confidence score</li>
+          <li>Toggle: show/hide individual skeletons</li>
+          <li>Phase scrubber: step through frames with slider</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>2. Joint Delta Heatmap</h3>
+        <p>Color-codes each joint by positional error vs pro reference. Green = within tolerance · Yellow = slight deviation · Red = significant mismatch.</p>
+        <ul class="checklist">
+          <li>Compute Euclidean distance per joint per phase</li>
+          <li>Map distance → HSL color (120° green → 0° red)</li>
+          <li>Render circles at joint positions with glow radius = error magnitude</li>
+          <li>Legend: distance in normalized units</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>3. Tempo Chart</h3>
+        <p>Bar chart showing backswing duration vs downswing duration. Target ratio 3:1.</p>
+        <ul class="checklist">
+          <li>SVG/Canvas bar chart with KP color scheme</li>
+          <li>Backswing bar: KP accent blue</li>
+          <li>Downswing bar: KP gold</li>
+          <li>Target ratio line at 3:1 (dashed, muted)</li>
+          <li>Your ratio labeled in large type above chart</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>4. Weight Shift Indicator</h3>
+        <p>Horizontal progress bar per phase showing lead-vs-trail weight distribution.</p>
+        <ul class="checklist">
+          <li>6 bars (one per phase) stacked vertically</li>
+          <li>Left = trail side · Right = lead side</li>
+          <li>Ideal zone highlighted in muted green</li>
+          <li>Your position shown as animated dot</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>5. Club Path Approximation</h3>
+        <p>Lead wrist trajectory from Top → Impact → Finish drawn on canvas as Bézier curve.</p>
+        <ul class="checklist">
+          <li>Sample wrist position at key phase frames</li>
+          <li>Draw smooth cubic Bézier through waypoints</li>
+          <li>Color gradient: blue (top) → gold (impact) → muted (finish)</li>
+          <li>Ideal path overlaid as dashed reference line</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>6. Swing Plane Lines</h3>
+        <p>Computed swing plane overlaid on frame canvas — the line connecting wrists at Top through ball position.</p>
+        <ul class="checklist">
+          <li>Use lead shoulder → ball address line as reference plane</li>
+          <li>Draw on-plane (blue) vs off-plane (red) indicator</li>
+          <li>Show arm plane separately (trail arm angle at Top)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="glow-sep"></div>
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       SECTION 6 — INDEXEDDB STORAGE LAYER
+  ═════════════════════════════════════════════════════════════════════ -->
+  <div class="section" id="s6">
+    <div class="section-header">
+      <div class="section-num">06</div>
+      <h2>IndexedDB Storage Layer</h2>
+    </div>
+
+    <div class="card">
+      <h3>Database Schema — SwingDB v1</h3>
+      <pre><span class="cm">// SwingDB.js — opens 'SwingVaultDB' version 1</span>
+<span class="kw">const</span> SCHEMA = {
+  swings: {                        <span class="cm">// Object store: one record per analyzed swing</span>
+    keyPath: <span class="st">'id'</span>,
+    autoIncrement: <span class="kw">true</span>,
+    indexes: [
+      { name: <span class="st">'date'</span>,      keyPath: <span class="st">'date'</span>,      unique: <span class="kw">false</span> },
+      { name: <span class="st">'golferTag'</span>, keyPath: <span class="st">'golferTag'</span>, unique: <span class="kw">false</span> },
+    ]
+  },
+  sessions: {                      <span class="cm">// Aggregated session (multiple swings)</span>
+    keyPath: <span class="st">'sessionId'</span>,
+    indexes: [
+      { name: <span class="st">'date'</span>, keyPath: <span class="st">'date'</span>, unique: <span class="kw">false</span> },
+    ]
+  }
+};
+
+<span class="cm">// Swing record shape</span>
+<span class="kw">const</span> swingRecord = {
+  id:          null,           <span class="cm">// auto-generated</span>
+  date:        <span class="st">'2026-04-29T14:30:00Z'</span>,
+  golferTag:   <span class="st">'player_1'</span>,
+  view:        <span class="st">'face-on'</span>,   <span class="cm">// 'face-on' | 'down-the-line'</span>
+  videoName:   <span class="st">'swing-04.mov'</span>,
+  durationSec: <span class="nm">3.2</span>,
+  frameCount:  <span class="nm">96</span>,
+  phases: {
+    address:   <span class="nm">5</span>,            <span class="cm">// frame index</span>
+    top:       <span class="nm">38</span>,
+    impact:    <span class="nm">62</span>,
+    finish:    <span class="nm">90</span>,
+  },
+  metrics: {
+    address:   { hipAngle: <span class="nm">2.1</span>, shoulderAngle: <span class="nm">1.4</span>, spineTilt: <span class="nm">16.2</span>, wristHinge: <span class="nm">4.0</span>, xFactor: <span class="nm">-0.7</span> },
+    top:       { hipAngle: <span class="nm">44.3</span>, shoulderAngle: <span class="nm">88.7</span>, spineTilt: <span class="nm">15.1</span>, wristHinge: <span class="nm">72.0</span>, xFactor: <span class="nm">34.4</span> },
+    impact:    { hipAngle: <span class="nm">82.0</span>, shoulderAngle: <span class="nm">55.0</span>, spineTilt: <span class="nm">13.0</span>, wristHinge: <span class="nm">18.0</span>, xFactor: <span class="nm">-27.0</span> },
+    finish:    { hipAngle: <span class="nm">92.0</span>, shoulderAngle: <span class="nm">102.0</span>, spineTilt: <span class="nm">6.0</span>, wristHinge: <span class="nm">0.0</span>, xFactor: <span class="nm">10.0</span> },
+  },
+  tempo:       { backswingFrames: <span class="nm">33</span>, downswingFrames: <span class="nm">11</span>, ratio: <span class="nm">3.0</span> },
+  sqi:         <span class="nm">82</span>,
+  coachingCues: [<span class="st">'Increase hip rotation at impact'</span>, <span class="st">'Excellent X-Factor at top'</span>],
+  frames:      [],               <span class="cm">// full swingFrame[] array (optional — large)</span>
+};</pre>
+    </div>
+
+    <div class="grid-2" style="margin-top:1rem;">
+      <div class="card">
+        <h3>CRUD Interface</h3>
+        <pre><span class="cm">// SwingDB.js exports</span>
+<span class="fn">SwingDB.saveSwing</span>(record)       → Promise&lt;id&gt;
+<span class="fn">SwingDB.getSwing</span>(id)            → Promise&lt;record&gt;
+<span class="fn">SwingDB.listSwings</span>(filter?)     → Promise&lt;record[]&gt;
+<span class="fn">SwingDB.deleteSwing</span>(id)         → Promise&lt;void&gt;
+<span class="fn">SwingDB.clearAll</span>()              → Promise&lt;void&gt;</pre>
+      </div>
+      <div class="card">
+        <h3>Trend Aggregators</h3>
+        <pre><span class="cm">// TrendAggregator.js exports</span>
+<span class="fn">getMetricTrend</span>(metric, n?)     → [{date, value}]
+<span class="fn">getSQIHistory</span>(n?)              → [{date, sqi}]
+<span class="fn">getBestSwing</span>()                 → record
+<span class="fn">getSessionAvg</span>(sessionId)      → metrics obj
+<span class="fn">getTempoHistory</span>(n?)            → [{date, ratio}]</pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="glow-sep"></div>
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       SECTION 7 — UI SHELL / TAB STRUCTURE
+  ═════════════════════════════════════════════════════════════════════ -->
+  <div class="section" id="s7">
+    <div class="section-header">
+      <div class="section-num">07</div>
+      <h2>UI Shell — Tab Structure</h2>
+    </div>
+
+    <p>Seven tabs, each styled with KnowingPath.ai glowmorphic cards, Inter typography, and the standard color palette.</p>
+
+    <div class="grid-2">
+      <div class="card">
+        <h4>Tab 1 — Swing Analyzer</h4>
+        <p>Primary input interface. Dual video upload (you + pro). Camera view selector. Analysis trigger button. Real-time pose overlay during processing.</p>
+        <ul class="checklist">
+          <li>Video drop zone with dashed gold border</li>
+          <li>Face-On / Down-the-Line toggle (KP pill tabs)</li>
+          <li>Canvas overlay on video element</li>
+          <li>Progress bar during frame processing (KP blue glow)</li>
+          <li>Coaching cue banner appears after analysis</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>Tab 2 — Metrics</h4>
+        <p>Phase-by-phase metrics comparison table. Your values vs Pro values vs Ideal range. 18 metric rows × 4 phases.</p>
+        <ul class="checklist">
+          <li>Phase selector tabs (Address / Top / Impact / Finish)</li>
+          <li>Table with color-coded diff column (green/yellow/red)</li>
+          <li>Hover on row → coaching cue tooltip</li>
+          <li>Export to CSV button</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>Tab 3 — Overlays</h4>
+        <p>Interactive canvas with toggle controls for all 6 overlay types. Frame scrubber to step through swing.</p>
+        <ul class="checklist">
+          <li>Checkbox grid for overlay toggles</li>
+          <li>Phase jump buttons (snap to Address / Top / Impact / Finish)</li>
+          <li>Frame scrubber slider</li>
+          <li>Canvas zoom (1× / 1.5× / 2×)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>Tab 4 — Scorecard</h4>
+        <p>Swing Quality Index hero display. Sub-score breakdown per metric. Glowmorphic card with animated score ring.</p>
+        <ul class="checklist">
+          <li>Large SQI number (0–100) with animated circle progress</li>
+          <li>Letter grade (A+ through F) in gold/blue/red</li>
+          <li>7 sub-score bars (one per SQI component)</li>
+          <li>Historical best / session average comparison</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>Tab 5 — Radar Chart</h4>
+        <p>Hexagonal radar showing all 5 core metrics vs ideal ranges. Dual trace: Your swing (blue) / Pro (gold).</p>
+        <ul class="checklist">
+          <li>Canvas-based radar (no library dependency)</li>
+          <li>Axes: Hip / Shoulder / X-Factor / Spine / Wrist</li>
+          <li>Filled polygon for Your swing (semi-transparent blue)</li>
+          <li>Stroke-only polygon for Pro (gold)</li>
+          <li>Ideal zone ring (muted green fill)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>Tab 6 — Trends</h4>
+        <p>Line graph of SQI history over sessions. Individual metric trends. Streak counter.</p>
+        <ul class="checklist">
+          <li>SQI line chart (last 20 sessions)</li>
+          <li>Metric selector dropdown to swap displayed metric</li>
+          <li>Session date labels on x-axis</li>
+          <li>"Best Swing" callout card (gold border)</li>
+          <li>Streak: consecutive sessions above SQI threshold</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>Tab 7 — Settings</h4>
+        <p>App configuration. Golfer profile. Data management. Model selection.</p>
+        <ul class="checklist">
+          <li>Golfer tag input (used in IndexedDB records)</li>
+          <li>Handedness toggle (right / left)</li>
+          <li>Pose model selector (BlazePose / MoveNet Lightning / MoveNet Thunder)</li>
+          <li>Frame sample rate slider (10–60 fps)</li>
+          <li>Clear session data button (with confirmation)</li>
+          <li>Export all data to JSON</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="glow-sep"></div>
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       SECTION 8 — FILE-BY-FILE PLAN
+  ═════════════════════════════════════════════════════════════════════ -->
+  <div class="section" id="s8">
+    <div class="section-header">
+      <div class="section-num">08</div>
+      <h2>File-by-File Plan</h2>
+    </div>
+
+    <div class="card">
+      <h3><span class="badge badge-green">NEW</span> Files to Create</h3>
+      <div class="file-item">
+        <span class="file-tag new">new</span>
+        <div>
+          <div class="file-path">index.html</div>
+          <div class="file-desc">KnowingPath.ai branded HTML shell. Sticky nav, 7-tab router, footer. Loads TF.js, OpenCV.js, and app.js.</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <span class="file-tag new">new</span>
+        <div>
+          <div class="file-path">styles/globals.css</div>
+          <div class="file-desc">Verbatim copy of KnowingPath.ai globals.css — design system foundation.</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <span class="file-tag new">new</span>
+        <div>
+          <div class="file-path">styles/app.css</div>
+          <div class="file-desc">Golf-app-specific styles: canvas wrapper, phase timeline, metrics table, radar chart, scorecard ring.</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <span class="file-tag new">new</span>
+        <div>
+          <div class="file-path">src/app.js</div>
+          <div class="file-desc">Top-level orchestrator. Initializes PoseEngine, TabRouter, SwingDB. Manages global state machine (idle → loading → analyzing → results).</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <span class="file-tag new">new</span>
+        <div>
+          <div class="file-path">src/core/PoseEngine.js</div>
+          <div class="file-desc">Loads BlazePose or MoveNet via TF.js. Exposes estimatePose(imageData) → keypoints[]. Handles WebGPU → WASM fallback.</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <span class="file-tag new">new</span>
+        <div>
+          <div class="file-path">src/core/FrameSampler.js</div>
+          <div class="file-desc">Video seeked-event loop. Seeks video to each timestamp, draws to offscreen canvas, passes ImageData to PoseEngine. Builds swingFrames[].</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <span class="file-tag new">new</span>
+        <div>
+          <div class="file-path">src/core/PhaseDetector.js</div>
+          <div class="file-desc">Heuristic segmentation of swingFrames[] into 6 phases. Returns {address, backswing, top, downswing, impact, finish} frame indices.</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <span class="file-tag new">new</span>
+        <div>
+          <div class="file-path">src/core/MetricsEngine.js</div>
+          <div class="file-desc">Computes all 8 metrics per frame. Generates 18-row phase-metrics table. Produces per-phase summary objects.</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <span class="file-tag new">new</span>
+        <div>
+          <div class="file-path">src/core/SQIEngine.js</div>
+          <div class="file-desc">Weighted composite scorer (0–100). Normalizes each metric against ideal range. Produces sub-scores and coaching cues.</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <span class="file-tag new">new</span>
+        <div>
+          <div class="file-path">src/core/Normalizer.js</div>
+          <div class="file-desc">Normalizes keypoints to [0,1] canvas space. Handles left/right-handed golfer mirroring. Orientation correction for portrait video.</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <span class="file-tag new">new</span>
+        <div>
+          <div class="file-path">src/overlays/SkeletonOverlay.js</div>
+          <div class="file-desc">Renders dual skeleton (you=blue, pro=gold) on canvas. Keypoint circles + limb lines. Confidence-proportional opacity.</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <span class="file-tag new">new</span>
+        <div>
+          <div class="file-path">src/overlays/HeatmapOverlay.js</div>
+          <div class="file-desc">Joint-delta heatmap. Maps Euclidean distance error to HSL color (green → red). Glow radius = error magnitude.</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <span class="file-tag new">new</span>
+        <div>
+          <div class="file-path">src/overlays/TempoChart.js</div>
+          <div class="file-desc">Canvas bar chart: backswing vs downswing duration. Blue/gold bars, 3:1 target reference line.</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <span class="file-tag new">new</span>
+        <div>
+          <div class="file-path">src/overlays/WeightShiftOverlay.js</div>
+          <div class="file-desc">6-phase horizontal bars showing lead/trail weight distribution. Ideal zone highlight.</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <span class="file-tag new">new</span>
+        <div>
+          <div class="file-path">src/overlays/ClubPathOverlay.js</div>
+          <div class="file-desc">Lead wrist Bézier trajectory from Top → Impact → Finish. Color gradient overlay + ideal path reference.</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <span class="file-tag new">new</span>
+        <div>
+          <div class="file-path">src/storage/SwingDB.js</div>
+          <div class="file-desc">IndexedDB wrapper. Schema v1 (swings + sessions stores). Full CRUD interface. Version upgrade handler.</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <span class="file-tag new">new</span>
+        <div>
+          <div class="file-path">src/storage/TrendAggregator.js</div>
+          <div class="file-desc">Queries SwingDB for historical trend data. Computes moving averages, personal bests, streak counts.</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <span class="file-tag new">new</span>
+        <div>
+          <div class="file-path">src/ui/TabRouter.js</div>
+          <div class="file-desc">Vanilla JS tab navigation. Shows/hides tab panels. Active tab highlight with KP styles. Hash-based routing.</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <span class="file-tag new">new</span>
+        <div>
+          <div class="file-path">src/ui/ScoreCard.js</div>
+          <div class="file-desc">SQI ring animation (canvas), letter grade, 7 sub-score bars. Historical comparison row.</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <span class="file-tag new">new</span>
+        <div>
+          <div class="file-path">src/ui/RadarChart.js</div>
+          <div class="file-desc">Custom canvas-based hexagonal radar. Dual polygon traces (you=blue, pro=gold). Ideal zone ring.</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <span class="file-tag new">new</span>
+        <div>
+          <div class="file-path">src/ui/TrendGraph.js</div>
+          <div class="file-desc">Canvas line graph for SQI/metric history. Session x-axis, metric y-axis. Dropdown metric selector.</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <span class="file-tag new">new</span>
+        <div>
+          <div class="file-path">src/ui/MetricsTable.js</div>
+          <div class="file-desc">18-row × 5-column phase metrics table. Color-coded diff. Hover coaching cue tooltips. CSV export.</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <span class="file-tag new">new</span>
+        <div>
+          <div class="file-path">src/ui/CoachingCueBanner.js</div>
+          <div class="file-desc">Dismissible coaching cue banner. Calm, supportive tone. Animated slide-in from bottom of canvas.</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <span class="file-tag new">new</span>
+        <div>
+          <div class="file-path">tests/unit/MetricsEngine.test.js</div>
+          <div class="file-desc">Unit tests for all metric computation functions with boundary values.</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <span class="file-tag new">new</span>
+        <div>
+          <div class="file-path">tests/unit/PhaseDetector.test.js</div>
+          <div class="file-desc">Tests for phase segmentation with synthetic keypoint sequences.</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <span class="file-tag new">new</span>
+        <div>
+          <div class="file-path">tests/unit/SQIEngine.test.js</div>
+          <div class="file-desc">SQI weighting correctness, boundary inputs (all zeros, all maxima), perfect-swing score = 100.</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <span class="file-tag new">new</span>
+        <div>
+          <div class="file-path">tests/integration/SwingDB.test.js</div>
+          <div class="file-desc">IndexedDB CRUD round-trip tests, schema migration tests, large-record stress test.</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <span class="file-tag new">new</span>
+        <div>
+          <div class="file-path">tests/stress/FrameSampler.stress.js</div>
+          <div class="file-desc">High frame-count stress test (600 frames), memory leak detection, processing time profiling.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:1rem;">
+      <h3><span class="badge badge-blue">KEPT</span> Reference Files (unchanged)</h3>
+      <div class="file-item">
+        <span class="file-tag keep">keep</span>
+        <div>
+          <div class="file-path">specs/</div>
+          <div class="file-desc">All spec documents — source of truth for metrics, math, and phase algorithms.</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <span class="file-tag keep">keep</span>
+        <div>
+          <div class="file-path">specs/other_spec/logo.svg</div>
+          <div class="file-desc">KnowingPath.ai logo — used in nav bar and scorecard header.</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <span class="file-tag keep">keep</span>
+        <div>
+          <div class="file-path">raw-videos/CV-golf-analysis/</div>
+          <div class="file-desc">Sample swing videos for manual testing and overlay calibration.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="glow-sep"></div>
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       SECTION 9 — IMPLEMENTATION PHASES
+  ═════════════════════════════════════════════════════════════════════ -->
+  <div class="section" id="s9">
+    <div class="section-header">
+      <div class="section-num">09</div>
+      <h2>Implementation Phases</h2>
+    </div>
+
+    <div class="card card-gold">
+      <h3>Phase 1 — MVP Core Pipeline</h3>
+      <p><span class="badge badge-gold">Target: Week 1–2</span></p>
+      <p>Get a working end-to-end swing analysis pipeline: video in → pose out → metrics table displayed.</p>
+      <table>
+        <thead><tr><th>Task</th><th>File</th><th>Effort</th></tr></thead>
+        <tbody>
+          <tr><td>HTML shell + KP branding</td><td><code>index.html</code>, <code>globals.css</code>, <code>app.css</code></td><td>0.5 day</td></tr>
+          <tr><td>Tab router (vanilla JS)</td><td><code>TabRouter.js</code></td><td>0.5 day</td></tr>
+          <tr><td>Pose model loading (BlazePose)</td><td><code>PoseEngine.js</code></td><td>1 day</td></tr>
+          <tr><td>Frame sampler (seeked-event loop)</td><td><code>FrameSampler.js</code></td><td>1 day</td></tr>
+          <tr><td>Normalizer (keypoint → canvas space)</td><td><code>Normalizer.js</code></td><td>0.5 day</td></tr>
+          <tr><td>Phase detector (6 phases)</td><td><code>PhaseDetector.js</code></td><td>1 day</td></tr>
+          <tr><td>Core metrics (5 angles + tempo)</td><td><code>MetricsEngine.js</code></td><td>1 day</td></tr>
+          <tr><td>Metrics table UI</td><td><code>MetricsTable.js</code></td><td>0.5 day</td></tr>
+          <tr><td>Coaching cue banner</td><td><code>CoachingCueBanner.js</code></td><td>0.5 day</td></tr>
+          <tr><td>Basic skeleton overlay</td><td><code>SkeletonOverlay.js</code></td><td>1 day</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card" style="margin-top:1rem;">
+      <h3>Phase 2 — Analytics &amp; Storage</h3>
+      <p><span class="badge badge-blue">Target: Week 3</span></p>
+      <p>Add SQI scoring, radar chart, scorecard, and IndexedDB persistence.</p>
+      <table>
+        <thead><tr><th>Task</th><th>File</th><th>Effort</th></tr></thead>
+        <tbody>
+          <tr><td>SQI weighted scorer</td><td><code>SQIEngine.js</code></td><td>1 day</td></tr>
+          <tr><td>Scorecard ring + sub-scores</td><td><code>ScoreCard.js</code></td><td>1 day</td></tr>
+          <tr><td>Radar chart (canvas, dual trace)</td><td><code>RadarChart.js</code></td><td>1 day</td></tr>
+          <tr><td>IndexedDB schema + CRUD</td><td><code>SwingDB.js</code></td><td>1 day</td></tr>
+          <tr><td>Auto-save swing on analysis complete</td><td><code>app.js</code></td><td>0.5 day</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card" style="margin-top:1rem;">
+      <h3>Phase 3 — Advanced Overlays</h3>
+      <p><span class="badge badge-blue">Target: Week 4</span></p>
+      <p>Build all 5 advanced visualization overlays and the overlay tab controls.</p>
+      <table>
+        <thead><tr><th>Task</th><th>File</th><th>Effort</th></tr></thead>
+        <tbody>
+          <tr><td>Joint delta heatmap</td><td><code>HeatmapOverlay.js</code></td><td>1 day</td></tr>
+          <tr><td>Tempo bar chart</td><td><code>TempoChart.js</code></td><td>0.5 day</td></tr>
+          <tr><td>Weight shift indicator</td><td><code>WeightShiftOverlay.js</code></td><td>0.5 day</td></tr>
+          <tr><td>Club path Bézier</td><td><code>ClubPathOverlay.js</code></td><td>1 day</td></tr>
+          <tr><td>Overlay tab + toggle controls</td><td><code>app.js</code>, <code>app.css</code></td><td>1 day</td></tr>
+          <tr><td>Frame scrubber slider</td><td><code>app.js</code></td><td>0.5 day</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card" style="margin-top:1rem;">
+      <h3>Phase 4 — Trends, Settings &amp; Polish</h3>
+      <p><span class="badge badge-blue">Target: Week 5</span></p>
+      <table>
+        <thead><tr><th>Task</th><th>File</th><th>Effort</th></tr></thead>
+        <tbody>
+          <tr><td>Trend aggregator queries</td><td><code>TrendAggregator.js</code></td><td>1 day</td></tr>
+          <tr><td>Trend graph (canvas line chart)</td><td><code>TrendGraph.js</code></td><td>1 day</td></tr>
+          <tr><td>Settings tab (golfer profile, model selector)</td><td><code>app.js</code></td><td>0.5 day</td></tr>
+          <tr><td>Export to JSON / CSV</td><td><code>app.js</code></td><td>0.5 day</td></tr>
+          <tr><td>Pro swing dual-upload + comparison</td><td><code>FrameSampler.js</code>, <code>SkeletonOverlay.js</code></td><td>1 day</td></tr>
+          <tr><td>KP branding polish pass (spacing, glows, animations)</td><td><code>app.css</code></td><td>1 day</td></tr>
+          <tr><td>Full test suite</td><td><code>tests/</code></td><td>2 days</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="glow-sep"></div>
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       SECTION 10 — TEST STRATEGY
+  ═════════════════════════════════════════════════════════════════════ -->
+  <div class="section" id="s10">
+    <div class="section-header">
+      <div class="section-num">10</div>
+      <h2>Test Strategy</h2>
+    </div>
+
+    <p>All tests run browser-locally (Vitest + jsdom, or native browser test runner). No server dependencies.</p>
+
+    <div class="grid-2">
+      <div class="card">
+        <h4>Unit Tests — MetricsEngine</h4>
+        <ul class="checklist">
+          <li>Hip rotation: known keypoints → known angle ±0.1°</li>
+          <li>Shoulder rotation: symmetric vs asymmetric pose</li>
+          <li>X-Factor: zero at address, 30° at top (synthetic)</li>
+          <li>Spine tilt: perfectly upright → 0°; forward address → 15°</li>
+          <li>Wrist hinge: straight wrist → 0°; 90° hinge → 90°</li>
+          <li>Boundary: missing keypoints (score &lt; 0.5) → NaN handled gracefully</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>Unit Tests — PhaseDetector</h4>
+        <ul class="checklist">
+          <li>Perfectly still sequence → all phases = frame 0</li>
+          <li>Synthetic ideal swing sequence → correct phase boundaries</li>
+          <li>Short video (&lt;20 frames) → graceful degradation</li>
+          <li>High-noise pose data → phase detection not corrupted</li>
+          <li>Left-handed golfer flag → phases still correct</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>Unit Tests — SQIEngine</h4>
+        <ul class="checklist">
+          <li>All metrics in ideal range → SQI = 100</li>
+          <li>All metrics at worst boundary → SQI = 0</li>
+          <li>Missing metric → weighted score redistributed</li>
+          <li>SQI weights sum to 1.0 (assertion)</li>
+          <li>Correct coaching cue generated per metric deviation</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>Integration Tests — SwingDB</h4>
+        <ul class="checklist">
+          <li>Save swing → retrieve by ID → data matches</li>
+          <li>Save 50 swings → list all → correct count</li>
+          <li>Delete swing → verify gone</li>
+          <li>Schema v1 → simulated v2 migration → data preserved</li>
+          <li>clearAll() → store empty</li>
+          <li>Large frame array (&gt;500 frames) → save/retrieve without corruption</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>Stress Tests — FrameSampler</h4>
+        <ul class="checklist">
+          <li>600-frame video: processing completes &lt;90s</li>
+          <li>No memory leak after 10 consecutive analyses</li>
+          <li>Cancel mid-analysis → state resets cleanly</li>
+          <li>4K video → canvas resize → no keypoint drift</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>UI Rendering Tests</h4>
+        <ul class="checklist">
+          <li>Tab navigation → correct panel shown each time</li>
+          <li>Radar chart renders without canvas errors</li>
+          <li>Scorecard ring animates 0→SQI value</li>
+          <li>MetricsTable: 18 rows rendered for complete analysis</li>
+          <li>CoachingCueBanner dismisses on click</li>
+          <li>Settings persist to localStorage across page reload</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="glow-sep"></div>
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       SECTION 11 — RISK REGISTER
+  ═════════════════════════════════════════════════════════════════════ -->
+  <div class="section" id="s11">
+    <div class="section-header">
+      <div class="section-num">11</div>
+      <h2>Risk Register</h2>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Risk</th>
+          <th>Likelihood</th>
+          <th>Impact</th>
+          <th>Mitigation</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>BlazePose fails to load (model CDN issue)</td>
+          <td><span class="badge badge-warn">Medium</span></td>
+          <td>High</td>
+          <td>Fallback to MoveNet Lightning; cache model to IndexedDB after first load</td>
+        </tr>
+        <tr>
+          <td>WebGPU not available in browser</td>
+          <td><span class="badge badge-warn">Medium</span></td>
+          <td>Medium</td>
+          <td>Detect at startup; graceful fallback to WASM backend; show performance warning</td>
+        </tr>
+        <tr>
+          <td>Phase detection fails on unusual swings</td>
+          <td><span class="badge badge-warn">Medium</span></td>
+          <td>Medium</td>
+          <td>Manual phase override UI (drag handles on frame scrubber); fallback heuristics documented</td>
+        </tr>
+        <tr>
+          <td>4K video too large for canvas memory</td>
+          <td><span class="badge badge-green">Low</span></td>
+          <td>High</td>
+          <td>Downsample to 1080p before frame extraction; max canvas dimension = 1920px</td>
+        </tr>
+        <tr>
+          <td>IndexedDB quota exceeded (many large sessions)</td>
+          <td><span class="badge badge-green">Low</span></td>
+          <td>Medium</td>
+          <td>Store frames as optional field; warn user at 80% quota; auto-prune oldest records</td>
+        </tr>
+        <tr>
+          <td>Poor pose confidence on baggy clothing</td>
+          <td><span class="badge badge-warn">Medium</span></td>
+          <td>Medium</td>
+          <td>Show keypoint confidence warning per joint; filter low-confidence frames from metrics</td>
+        </tr>
+        <tr>
+          <td>HEIC video format not supported by browser</td>
+          <td><span class="badge badge-green">Low</span></td>
+          <td>Low</td>
+          <td>Detect HEIC at input; show friendly message asking for .mp4/.mov conversion</td>
+        </tr>
+        <tr style="border-left:3px solid var(--success);">
+          <td>Portrait/rotated MOV files (iPhone vertical recording) — blank video preview <span class="badge badge-green" style="margin-left:0.4rem;">FIXED 2026-04-29</span></td>
+          <td><span class="badge badge-green">Low</span></td>
+          <td>High</td>
+          <td>Fixed in <code>loadVideoFile</code>: seek to 0.001s after <code>loadedmetadata</code> forces first-frame decode. For clean files: re-encode with <code>ffmpeg -map_metadata -1</code> to strip rotation flag. See <code>updated_docs/WIP/problems-found/04292026-video-orientation-issue.md</code></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="glow-sep"></div>
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       SECTION 12 — KNOWN ISSUES & FIXES LOG
+  ═════════════════════════════════════════════════════════════════════ -->
+  <div class="section" id="s12">
+    <div class="section-header">
+      <div class="section-num">12</div>
+      <h2>Known Issues &amp; Fixes Log</h2>
+    </div>
+
+    <p>Living record of bugs discovered during development — symptom, full diagnosis path, all failed attempts, and the final fix applied.</p>
+
+    <!-- ── ISSUE #1 ── -->
+    <div class="card card-gold">
+      <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.75rem;flex-wrap:wrap;">
+        <h3 style="margin:0;">Issue #1 — Portrait Video Not Displaying</h3>
+        <span class="badge badge-green">RESOLVED</span>
+        <span style="font-size:0.75rem;color:var(--dim);">2026-04-29</span>
+      </div>
+      <p><strong>File:</strong> <code>src/core/FrameSampler.js</code> &nbsp;·&nbsp;
+         <strong>Full doc:</strong> <code>updated_docs/WIP/problems-found/04292026-video-orientation-issue.md</code></p>
+
+      <h4>Symptom</h4>
+      <p><code>aom-side-swing.MOV</code> (iPhone video) did not display in the <code>&lt;video&gt;</code> element after upload — preview stayed black. <code>StacyLewis-Side-Swing.MOV</code> loaded fine. Both are MOV/H.264 files with <code>moov</code> at file start.</p>
+
+      <h4 style="margin-top:1rem;">Root Cause</h4>
+      <p>Binary parsing of the QuickTime <code>tkhd</code> transformation matrix revealed a <strong>90° CW rotation flag</strong> in the iPhone video (portrait recording). Chrome/Edge fires <code>loadedmetadata</code> but does not proactively decode the first frame for rotated files — the <code>&lt;video&gt;</code> element stays blank until a seek is issued.</p>
+      <table>
+        <thead><tr><th>File</th><th>tkhd Rotation</th><th>Orientation</th></tr></thead>
+        <tbody>
+          <tr><td><code>aom-side-swing.MOV</code></td><td><strong>90° CW</strong></td><td>Portrait — iPhone vertical recording</td></tr>
+          <tr><td><code>StacyLewis-Side-Swing.MOV</code></td><td>0° (identity)</td><td>Landscape — normal horizontal recording</td></tr>
+        </tbody>
+      </table>
+
+      <h4 style="margin-top:1rem;">Fix — <code>loadVideoFile()</code> in <code>FrameSampler.js</code></h4>
+      <pre>videoEl.addEventListener('loadedmetadata', () => {
+  // Seek forces first-frame decode without awaiting seeked event
+  // (seeked can silently not fire at t=0 — resolving on it hangs the Promise)
+  videoEl.currentTime = 0.001;
+  resolve();
+}, { once: true });
+// Also fixed: error handler now uses videoEl.error.message (not e.message)</pre>
+
+      <h4 style="margin-top:1rem;">Reference Copy — <code>aom-new-side-swing.mov</code></h4>
+      <p>A clean H.264 browser-compatible copy was produced with ffmpeg. Two failed attempts first:</p>
+      <ul class="checklist">
+        <li><strong>Fail 1 — OpenCV mp4v:</strong> Produced 83 MB MPEG-4 Part 2 file — Chrome/Edge does not support this codec</li>
+        <li><strong>Fail 2 — ffmpeg transpose=1:</strong> Double rotation — ffmpeg's <code>-autorotate</code> is ON by default, so the video was already correct before <code>transpose=1</code> rotated it a second time (head east, feet west)</li>
+        <li><strong>Success — ffmpeg without transpose:</strong> Let auto-rotate bake the orientation, strip all metadata with <code>-map_metadata -1</code>, add <code>-movflags +faststart</code></li>
+      </ul>
+      <pre>ffmpeg -y -i aom-side-swing.MOV -c:v libx264 -preset fast -crf 23 \
+  -c:a aac -movflags +faststart -map_metadata -1 aom-new-side-swing.mov
+# Result: 5.5 MB · H.264 · 328 frames · no rotation metadata · moov at front</pre>
+
+      <h4 style="margin-top:1rem;">Action Items</h4>
+      <ul class="checklist">
+        <li><input type="checkbox" class="task-check" id="i1-a1"> Add portrait warning banner in <code>handleFileSelect</code> (<code>app.js</code>) when <code>videoEl.videoHeight &gt; videoEl.videoWidth</code></li>
+        <li><input type="checkbox" class="task-check" id="i1-a2"> Add landscape orientation guidance to upload hint text in <code>index.html</code></li>
+        <li><input type="checkbox" class="task-check" id="i1-a3"> Re-record <code>aom-side-swing.MOV</code> in landscape mode for accurate pose estimation</li>
+        <li><input type="checkbox" class="task-check" id="i1-a4"> Add video orientation validation to <code>loadVideoFile</code> pipeline</li>
+      </ul>
+
+      <h4 style="margin-top:1rem;">Recording Requirements</h4>
+      <ul class="checklist">
+        <li><strong>Both videos must be landscape (horizontal)</strong> — phone held sideways</li>
+        <li>Same camera angle for both (face-on or down-the-line)</li>
+        <li>Same approximate distance from the golfer</li>
+        <li>Portrait videos can be corrected: <code>ffmpeg -i in.MOV -c:v libx264 -crf 23 -c:a aac -movflags +faststart -map_metadata -1 out.mov</code></li>
+      </ul>
+    </div>
+
+  </div><!-- /s12 -->
+
+</div><!-- .page -->
+
+<!-- ── PUBLIC VS. PRIVATE REPO SHARING ──────────────────────────────────── -->
+<div class="page" style="padding-top: 2rem;">
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">🔐</div>
+      <h2>Public vs. Private Repository Sharing Strategy</h2>
+    </div>
+
+    <p style="color: var(--muted); margin-bottom: 1.5rem;">
+      SwingKrazy repository is currently <strong>PUBLIC</strong>. This document explains the implications and when you might consider changing to private, along with how access works in each scenario.
+    </p>
+
+    <!-- Current Status -->
+    <div class="card" style="border-color: #34D399; background: rgba(52,211,153,0.04); margin-bottom: 1.5rem;">
+      <h3 style="color: #34D399; margin-bottom: 0.75rem;">✅ Current Status: PUBLIC Repository</h3>
+      <p style="color: var(--text); margin-bottom: 1rem;">
+        The repo at <code>github.com/KnowingPath-ai/swingkrazy</code> is public, allowing anyone to:
+      </p>
+      <ul style="color: var(--text); margin-left: 1.5rem; margin-bottom: 1rem; font-size: 0.9rem;">
+        <li>Clone the repository directly without authentication</li>
+        <li>Download sample videos (raw-videos/CV-golf-analysis/pro and amateur)</li>
+        <li>View all source code</li>
+        <li>Access via any of three methods: CLI, GitHub Desktop, or ZIP download</li>
+      </ul>
+      <p style="color: var(--dim); font-size: 0.85rem; font-style: italic;">
+        <strong>Recommendation:</strong> Keep PUBLIC for sample library distribution. Users can access immediately without friction.
+      </p>
+    </div>
+
+    <!-- Comparison Table -->
+    <div style="margin-bottom: 1.5rem; overflow-x: auto;">
+      <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+        <thead>
+          <tr style="background: rgba(91,163,217,0.08); border-bottom: 2px solid var(--border);">
+            <th style="padding: 0.75rem; text-align: left; color: var(--muted); font-weight: 600; text-transform: uppercase; font-size: 0.75rem;">Feature</th>
+            <th style="padding: 0.75rem; text-align: left; color: var(--muted); font-weight: 600; text-transform: uppercase; font-size: 0.75rem;">Public Repo</th>
+            <th style="padding: 0.75rem; text-align: left; color: var(--muted); font-weight: 600; text-transform: uppercase; font-size: 0.75rem;">Private Repo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="padding: 0.75rem; color: var(--text); font-weight: 500;">Clone without authentication</td>
+            <td style="padding: 0.75rem; color: #34D399;">✅ Yes, anyone</td>
+            <td style="padding: 0.75rem; color: #FCA5A5;">❌ Requires access</td>
+          </tr>
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="padding: 0.75rem; color: var(--text); font-weight: 500;">How to grant access</td>
+            <td style="padding: 0.75rem; color: var(--text);">N/A (open to all)</td>
+            <td style="padding: 0.75rem; color: var(--text);">Add as GitHub collaborator</td>
+          </tr>
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="padding: 0.75rem; color: var(--text); font-weight: 500;">User discovers repo</td>
+            <td style="padding: 0.75rem; color: var(--text);">Direct link or search GitHub</td>
+            <td style="padding: 0.75rem; color: var(--text);">Only if you share link + they have access</td>
+          </tr>
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="padding: 0.75rem; color: var(--text); font-weight: 500;">Sample videos accessible</td>
+            <td style="padding: 0.75rem; color: #34D399;">✅ Immediately</td>
+            <td style="padding: 0.75rem; color: var(--text);">After authentication</td>
+          </tr>
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="padding: 0.75rem; color: var(--text); font-weight: 500;">Share link that works</td>
+            <td style="padding: 0.75rem; color: #34D399;">✅ Yes, direct link</td>
+            <td style="padding: 0.75rem; color: #FCA5A5;">No, link alone insufficient</td>
+          </tr>
+          <tr>
+            <td style="padding: 0.75rem; color: var(--text); font-weight: 500;">User onboarding friction</td>
+            <td style="padding: 0.75rem; color: #34D399;">✅ Zero (click & clone)</td>
+            <td style="padding: 0.75rem; color: var(--dim);">High (auth required)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- If You Ever Make It Private -->
+    <div class="card" style="border-color: rgba(91,163,217,0.3); background: rgba(91,163,217,0.05);">
+      <h3 style="color: var(--accentHi); margin-bottom: 1rem;">If You Change to Private (Future Scenario)</h3>
+
+      <p style="color: var(--text); margin-bottom: 1rem; font-weight: 500;">
+        <strong>Step 1: Add Collaborators via GitHub</strong>
+      </p>
+      <ol style="color: var(--text); margin-left: 1.5rem; margin-bottom: 1.5rem; font-size: 0.9rem; line-height: 1.8;">
+        <li>Go to repo → Settings → Collaborators & teams</li>
+        <li>Click "Add people"</li>
+        <li>Type their GitHub username</li>
+        <li>GitHub sends them an invitation email</li>
+        <li>They click "Accept" in the email</li>
+      </ol>
+
+      <p style="color: var(--text); margin-bottom: 1rem; font-weight: 500;">
+        <strong>Step 2: They Clone with Authentication</strong>
+      </p>
+      <div style="background: rgba(5,9,18,0.9); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem; font-family: 'Menlo', monospace; font-size: 0.8rem; color: #A8C7E8; overflow-x: auto; margin-bottom: 1rem;">
+        git clone https://github.com/KnowingPath-ai/swingkrazy.git
+      </div>
+      <p style="color: var(--muted); font-size: 0.9rem;">
+        GitHub prompts for username/password (or personal access token). They authenticate and cloning succeeds.
+      </p>
+
+      <p style="color: var(--dim); font-size: 0.85rem; margin-top: 1rem; font-style: italic;">
+        <strong>Note:</strong> Simply sharing a link is <strong>not enough</strong> for private repos. User must be added as a collaborator first and have valid GitHub credentials.
+      </p>
+    </div>
+
+    <!-- Recommendation -->
+    <div class="card" style="border-color: #D4A843; background: rgba(212,168,67,0.04);">
+      <h3 style="color: #F0C855; margin-bottom: 1rem;">📋 Decision Summary</h3>
+      <p style="color: var(--text); margin-bottom: 1rem;">
+        <strong>Keep SwingKrazy Repository PUBLIC</strong> for the following reasons:
+      </p>
+      <ul style="color: var(--text); margin-left: 1.5rem; font-size: 0.9rem; line-height: 1.8;">
+        <li><strong>Sample Video Distribution:</strong> Users can access pro and amateur reference swings immediately without friction</li>
+        <li><strong>Zero Authentication Friction:</strong> No need to manage GitHub collaborators or send invites</li>
+        <li><strong>Discoverability:</strong> Appears in GitHub search, easier for users to find</li>
+        <li><strong>Open Source Philosophy:</strong> Aligns with sharing a free, helpful tool with the golf community</li>
+        <li><strong>Netlify Users:</strong> Can clone directly without any setup or credentials</li>
+      </ul>
+      <p style="color: var(--muted); font-size: 0.9rem; margin-top: 1.5rem;">
+        <strong>When to Consider Private:</strong> Only if you plan to charge for the app or restrict access to specific users (future paid tier). Then provide private credentials to paying customers.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ── FUTURE FEATURES (PAID TIER) ──────────────────────────────────────── -->
+<div class="page" style="padding-top: 2rem;">
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num" style="background: linear-gradient(135deg, rgba(212,168,67,0.2) 0%, rgba(212,168,67,0.08) 100%); border-color: rgba(212,168,67,0.3); color: #D4A843;">⭐</div>
+      <h2>Future Features (Paid Subscriber Tier)</h2>
+    </div>
+
+    <div class="card" style="border-color: rgba(212,168,67,0.25); background: rgba(212,168,67,0.04);">
+      <h3 style="color: #F0C855; margin-bottom: 0.75rem;">🎥 Sample Video Download (Option B)</h3>
+      <p><strong>Current (Free MVP):</strong> Users clone GitHub repo to access raw-videos folder with sample swings.</p>
+      <p style="margin-bottom: 0.75rem;"><strong>Paid Feature:</strong> In-app download button for sample videos. Users access pro and amateur swings directly from the app without GitHub — enables frictionless Netlify-hosted experience.</p>
+      <p style="font-size: 0.9rem; color: #94A3B8;"><strong>Implementation:</strong> "Download Samples" button in UI → queries GitHub CDN/S3 → categories (Pro Swings, Amateur Examples) → direct to local folder. <strong>Effort:</strong> 6–8 hours (Phase 5+).</p>
+    </div>
+
+    <div class="card" style="border-color: rgba(212,168,67,0.25); background: rgba(212,168,67,0.04); margin-bottom: 1rem;">
+      <h3 style="color: #F0C855; margin-bottom: 0.75rem;">📄 PDF Report Export</h3>
+      <p><strong>Current (Free MVP):</strong> On-screen analysis view. Browser print-to-PDF (Ctrl+P) with optimized CSS styling.</p>
+      <p style="margin-bottom: 0.75rem;"><strong>Paid Feature:</strong> One-click professional PDF with KP branding, all metrics, skeleton images, heatmaps, tempo charts, and coaching summary.</p>
+      <p style="font-size: 0.9rem; color: #94A3B8;"><strong>Phases:</strong></p>
+      <ul style="font-size: 0.9rem; color: #94A3B8; margin: 0.5rem 0 0 1.5rem; line-height: 1.6;">
+        <li><strong>Phase 1:</strong> Print button + enhanced @media print CSS (2–3 hrs)</li>
+        <li><strong>Phase 2:</strong> jsPDF + html2canvas with metrics + images (4–6 hrs)</li>
+        <li><strong>Phase 3 (Premium):</strong> Professional template, comparisons, insights (8–12 hrs)</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ── FOOTER ──────────────────────────────────────────────────────────── -->
+<footer>
+  <div class="footer-brand">KnowingPath.ai</div>
+  <div class="footer-tagline">From Not Knowing to Knowing, With Compassion</div>
+  <div style="margin-top:0.75rem; color:#2D3A50; font-size:0.72rem;">
+    © KnowingPath.ai &nbsp;·&nbsp; Golf Swing Analysis — Implementation Plan &nbsp;·&nbsp; April 29, 2026
+  </div>
+</footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // ── Inject "Done" checkbox column into every phase task table (Section 9) ──
+  document.querySelectorAll('#s9 .card table').forEach((table, tIdx) => {
+    const thead = table.querySelector('thead tr');
+    if (!thead) return;
+    const thDone = document.createElement('th');
+    thDone.textContent = 'Done';
+    thDone.style.cssText = 'width:48px;text-align:center;';
+    thead.appendChild(thDone);
+
+    table.querySelectorAll('tbody tr').forEach((tr, rIdx) => {
+      const td = document.createElement('td');
+      td.style.textAlign = 'center';
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.className = 'task-check';
+      cb.id = 'p' + (tIdx + 1) + '-t' + (rIdx + 1);
+      td.appendChild(cb);
+      tr.appendChild(td);
+    });
+  });
+
+  // ── Completed as of 2026-04-30 session ────────────────────────────────────
+  // Phase 1 (all 10), Phase 2 (all 5), Phase 3 (all 6), Phase 4 (6 of 7)
+  // p4-t7 = full test suite — NOT YET DONE
+  // P2 Action Items (video orientation) — all 4 DONE 2026-04-30
+  const COMPLETED_04292026 = {
+    'p1-t1':true,'p1-t2':true,'p1-t3':true,'p1-t4':true,'p1-t5':true,
+    'p1-t6':true,'p1-t7':true,'p1-t8':true,'p1-t9':true,'p1-t10':true,
+    'p2-t1':true,'p2-t2':true,'p2-t3':true,'p2-t4':true,'p2-t5':true,
+    'p3-t1':true,'p3-t2':true,'p3-t3':true,'p3-t4':true,'p3-t5':true,'p3-t6':true,
+    'p4-t1':true,'p4-t2':true,'p4-t3':true,'p4-t4':true,'p4-t5':true,'p4-t6':true,
+    'i1-a1':true,'i1-a2':true,'i1-a3':true,'i1-a4':true
+  };
+
+  // ── Persist all checkbox states via localStorage ───────────────────────────
+  const KEY = 'kp-golf-plan-checks';
+  const saved = JSON.parse(localStorage.getItem(KEY) || '{}');
+  // Merge: COMPLETED defaults, overridden by any user changes saved in localStorage
+  const state = Object.assign({}, COMPLETED_04292026, saved);
+
+  document.querySelectorAll('input[type="checkbox"].task-check').forEach(cb => {
+    if (state[cb.id]) {
+      cb.checked = true;
+      const row = cb.closest('tr');
+      const item = cb.closest('li');
+      if (row) row.classList.add('done');
+      if (item) item.style.opacity = '0.5';
+    }
+    cb.addEventListener('change', () => {
+      const current = JSON.parse(localStorage.getItem(KEY) || '{}');
+      current[cb.id] = cb.checked;
+      localStorage.setItem(KEY, JSON.stringify(current));
+      const row = cb.closest('tr');
+      const item = cb.closest('li');
+      if (row) row.classList.toggle('done', cb.checked);
+      if (item) item.style.opacity = cb.checked ? '0.5' : '';
+    });
+  });
+});
+</script>
+</body>
+</html>

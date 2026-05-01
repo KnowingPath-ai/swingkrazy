@@ -24,12 +24,6 @@ coverage/
 dist/
 build/
 
-# Local video files (raw test videos, too large for repo)
-raw-videos/
-*.mp4
-*.webm
-*.mov
-
 # Claude Code project settings (local)
 .claude/
 
