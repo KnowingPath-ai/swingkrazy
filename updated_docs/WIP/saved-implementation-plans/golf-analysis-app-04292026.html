@@ -23,7 +23,22 @@
       overflow-x: hidden;
       line-height: 1.65;
       font-size: 15px;
+      position: relative;
     }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url('../../src/assets/blue-owl-o15.png');
+      background-size: 45%;
+      background-repeat: no-repeat;
+      background-position: center center;
+      opacity: 0.20;
+      pointer-events: none;
+      z-index: -1;
+    }
+
     ::-webkit-scrollbar { width: 5px; }
     ::-webkit-scrollbar-track { background: #050912; }
     ::-webkit-scrollbar-thumb { background: rgba(91,163,217,0.35); border-radius: 3px; }
@@ -648,7 +663,7 @@ background-attachment: fixed;</pre>
     <!-- Component Architecture -->
     <div class="card" style="margin-top:1rem;">
       <h3>Component &amp; Module Architecture</h3>
-      <pre><span class="fn">golf-swing-analysis/</span>
+      <pre><span class="fn">swingkrazy/</span>
 ├── <span class="fn">index.html</span>              <span class="cm">— Entry point, KP-branded shell</span>
 ├── <span class="fn">styles/</span>
 │   ├── <span class="fn">globals.css</span>         <span class="cm">— KnowingPath.ai design system (verbatim)</span>

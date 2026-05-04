@@ -19,6 +19,20 @@
       background-attachment: fixed;
       color: #E2E8F0; min-height: 100vh; overflow-x: hidden;
       line-height: 1.65; font-size: 15px;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url('../../src/assets/blue-owl-o15.png');
+      background-size: 45%;
+      background-repeat: no-repeat;
+      background-position: center center;
+      opacity: 0.05;
+      pointer-events: none;
+      z-index: -1;
     }
     :root {
       --bg: #050912; --bg2: #0A0F1E;
@@ -215,7 +229,7 @@
     <div class="nav-divider"></div>
     <span class="nav-tag">Golf CV</span>
   </div>
-  <span class="nav-meta">Next Session Plan &nbsp;·&nbsp; Picks up from 2026-04-29</span>
+  <span class="nav-meta">Next Session Plan &nbsp;·&nbsp; Updated 2026-04-30 after navigation redesign</span>
 </nav>
 
 <div class="page">
@@ -223,19 +237,16 @@
   <div class="hero">
     <div class="hero-eyebrow">⛳ Golf Swing Analysis — What's Next</div>
     <h1>Next Session Plan</h1>
-    <p class="hero-sub">Prioritized action list picking up where the April 29, 2026 session ended. App is code-complete (27/28 tasks done) and ready for first browser test.</p>
+    <p class="hero-sub">Updated after evening session 2026-04-30. Navigation redesign complete (P2.5 ✅). App is ready for first browser test. P1 browser test is the next critical phase.</p>
     <div class="hero-meta">
-      <div class="hero-meta-item"><div class="dot"></div>Start with browser test</div>
-      <div class="hero-meta-item"><div class="dot gold"></div>1 Phase 4 task remaining</div>
-      <div class="hero-meta-item"><div class="dot"></div>4 open action items from Issue #1</div>
+      <div class="hero-meta-item"><div class="dot"></div>P1: Browser test (CRITICAL NEXT)</div>
+      <div class="hero-meta-item"><div class="dot gold"></div>P2.5: Navigation UI complete ✅</div>
+      <div class="hero-meta-item"><div class="dot"></div>P3-P6: After browser test passes</div>
     </div>
   </div>
 
   <div class="context-box">
-    <strong>Session context:</strong> All 23 source files are built and on disk. The app has NOT yet been tested in a browser.
-    The only remaining planned task is the full test suite. One video orientation bug was found and fixed. A clean reference video
-    (<code>aom-new-side-swing.mov</code>) was created. See
-    <code>updated_docs/WIP/saved-session-summaries/04292026-session-summary.html</code> for full details.
+    <strong>Current status (as of 2026-04-30 22:56 UTC):</strong> All 23 core application files are built and on disk. Navigation and About Us modal have been redesigned with professional glassmorphic styling matching KnowingPath.ai design system (commit cd3e9d8 ✅). The app has NOT yet been tested in a browser. Next session should start with P1 browser test. See <code>updated_docs/WIP/saved-session-summaries/04302026-2256-session-summary.html</code> for detailed navigation redesign summary.
   </div>
 
   <div class="glow-sep"></div>
@@ -449,47 +460,61 @@ python -m http.server 8080
 
   <div class="glow-sep"></div>
 
-  <!-- ── PRIORITY 5: MAIN MENU ── -->
+  <!-- ── PRIORITY 2.5 & 5: NAVIGATION & MAIN MENU ── -->
   <div class="section" id="p5">
     <div class="section-header">
-      <div class="section-num">P5</div>
-      <h2>Add Menu to Main Index Page</h2>
+      <div class="section-num" style="background: linear-gradient(135deg, rgba(52,211,153,0.2) 0%, rgba(52,211,153,0.08) 100%); border-color: rgba(52,211,153,0.3); color: var(--success);">✅</div>
+      <h2>Navigation & Main Menu (P2.5 + P5) — COMPLETE</h2>
     </div>
 
-    <div class="card">
-      <p>The app currently launches directly into the 7-tab interface. Users need a clean entry point with menu options (Analyze, How It Works, Gallery, etc.).</p>
+    <div class="card" style="border-color: rgba(52,211,153,0.3); background: rgba(52,211,153,0.04);">
+      <p><strong style="color: var(--success);">✅ Session 2026-04-30 Evening:</strong> Redesigned navigation and About Us modal with professional glassmorphic styling matching KnowingPath.ai design system. Both index.html and How-It-Works.html updated consistently. Commit cd3e9d8 pushed to GitHub.</p>
+
+      <h4 style="margin-top:1.25rem;">Implemented Features:</h4>
       <ul class="task-list">
         <li>
-          <span class="task-tag tag-p1">UI</span>
-          <input type="checkbox" id="p5-1" class="task-check">
+          <input type="checkbox" id="p5-1" class="task-check" checked disabled>
           <label for="p5-1">
-            <strong>Design main menu landing page</strong> — KnowingPath branding, 4–5 call-to-action buttons:
-            "Analyze Your Swing", "How It Works", "Gallery", "Settings", "About"
+            <strong>Fixed top navigation</strong> — Logo on left, menu items (Home, Analyzer, How It Works, About Us) on right, CTA button (Golf Tracker Pro)
           </label>
         </li>
         <li>
-          <span class="task-tag tag-p1">Code</span>
-          <input type="checkbox" id="p5-2" class="task-check">
+          <input type="checkbox" id="p5-2" class="task-check" checked disabled>
           <label for="p5-2">
-            <strong>Implement navigation logic</strong> — <code>main-menu.html</code> or add menu modal to <code>index.html</code>,
-            route to <code>#/analyze</code>, <code>#/how-it-works</code>, etc. via fragment or simple JS toggle
+            <strong>Dynamic scroll effects</strong> — Nav padding reduces, background darkens, border appears on scroll past 40px
           </label>
         </li>
         <li>
-          <span class="task-tag tag-p1">Link</span>
-          <input type="checkbox" id="p5-3" class="task-check">
+          <input type="checkbox" id="p5-3" class="task-check" checked disabled>
           <label for="p5-3">
-            <strong>"Analyze Your Swing" button</strong> — links to the 7-tab interface (current <code>index.html</code> content)
+            <strong>Responsive hamburger menu</strong> — Mobile drawer for screens < 768px with expandable navigation
           </label>
         </li>
         <li>
-          <span class="task-tag tag-p2">Link</span>
-          <input type="checkbox" id="p5-4" class="task-check">
+          <input type="checkbox" id="p5-4" class="task-check" checked disabled>
           <label for="p5-4">
-            <strong>"How It Works" button</strong> — links to new user manual (P6); opens in same page or modal
+            <strong>Professional About Us modal</strong> — Glassmorphic design with gradient text, 4-pillar cards (Clarity/Compassion/Elevation/Privacy First), hover animations, featured products section
+          </label>
+        </li>
+        <li>
+          <input type="checkbox" id="p5-5" class="task-check" checked disabled>
+          <label for="p5-5">
+            <strong>Design system alignment</strong> — Colors, typography, animations, shadows all match KnowingPath.ai reference implementation
+          </label>
+        </li>
+        <li>
+          <input type="checkbox" id="p5-6" class="task-check" checked disabled>
+          <label for="p5-6">
+            <strong>Consistent across pages</strong> — Navigation and About Us modal implemented on both index.html and How-It-Works.html
           </label>
         </li>
       </ul>
+
+      <p style="margin-top:1.25rem; color: var(--dim); font-size: 0.9rem;">
+        <strong>Files updated:</strong> index.html, How-It-Works.html, styles/app.css, styles/globals.css<br>
+        <strong>Git commit:</strong> cd3e9d8 (Redesign navigation and About Us modal with KnowingPath.ai glassmorphism design system)<br>
+        <strong>Session summary:</strong> saved-session-summaries/04302026-2256-session-summary.html
+      </p>
     </div>
   </div>
 
@@ -499,59 +524,45 @@ python -m http.server 8080
   <div class="section" id="p6">
     <div class="section-header">
       <div class="section-num">P6</div>
-      <h2>Create Searchable User Manual &amp; Q&amp;A</h2>
+      <h2>Enhance User Manual (How-It-Works.html) &amp; FAQ</h2>
     </div>
 
     <div class="card card-gold">
-      <p>End-users need clear, non-technical documentation. This becomes the "How It Works" page accessible from the main menu.</p>
+      <p><strong>Status:</strong> How-It-Works.html was created in Session 2026-04-30 Context-2 ✅. Navigation menu links to it ✅. Now enhance with search/filter and expand content as needed.</p>
       <ul class="task-list">
         <li>
-          <span class="task-tag tag-p1">Doc</span>
-          <input type="checkbox" id="p6-1" class="task-check">
+          <input type="checkbox" id="p6-1" class="task-check" checked>
           <label for="p6-1">
-            <strong>Phase Detection Explanation</strong> — user-friendly breakdown of Address, Top, Impact, Finish phases.
-            <strong>Include:</strong> what each phase is, why it matters, how the app auto-detects them, how to manually adjust if needed.
-            <strong>Detail level:</strong> enough for a golfer to understand, not biomechanics textbook.
+            <strong>How-It-Works.html created</strong> — 7-section standalone guide with phase explanations, metrics glossary, step-by-step walkthrough, troubleshooting
           </label>
         </li>
         <li>
-          <span class="task-tag tag-p1">Doc</span>
-          <input type="checkbox" id="p6-2" class="task-check">
+          <input type="checkbox" id="p6-2" class="task-check" checked>
           <label for="p6-2">
-            <strong>Metrics Glossary</strong> — what is X-Factor? Hip rotation? Spine tilt? Why they matter. Ideal ranges at each phase.
-            Link to coaching theory where relevant.
-          </label>
-        </li>
-        <li>
-          <span class="task-tag tag-p1">Doc</span>
-          <input type="checkbox" id="p6-3" class="task-check">
-          <label for="p6-3">
-            <strong>Upload &amp; Analysis Walkthrough</strong> — step-by-step: upload your swing, upload pro swing, click Analyze, what to expect.
-            Tips on video orientation, lighting, camera distance.
-          </label>
-        </li>
-        <li>
-          <span class="task-tag tag-p1">Doc</span>
-          <input type="checkbox" id="p6-4" class="task-check">
-          <label for="p6-4">
-            <strong>FAQ Section</strong> — common questions: "Why portrait video doesn't work", "How do I compare to a different pro?",
-            "What if phase detection is wrong?", "How do I export my analysis?"
+            <strong>Navigation integrated</strong> — "How It Works" menu item links to How-It-Works.html, accessible from both index.html and guide page
           </label>
         </li>
         <li>
           <span class="task-tag tag-p2">Feature</span>
-          <input type="checkbox" id="p6-5" class="task-check">
-          <label for="p6-5">
-            <strong>Search/Filter UI</strong> — searchable topics (Ctrl+F or search box),
-            collapsible sections, index of all topics. Keep it clean and navigable.
+          <input type="checkbox" id="p6-3" class="task-check">
+          <label for="p6-3">
+            <strong>Add search/filter UI</strong> — searchable topics (Ctrl+F or custom search box),
+            collapsible sections, table of contents. Keep it clean and navigable for end users.
           </label>
         </li>
         <li>
-          <span class="task-tag tag-p2">Code</span>
-          <input type="checkbox" id="p6-6" class="task-check">
-          <label for="p6-6">
-            <strong>Create <code>how-it-works.html</code></strong> — self-contained document (no external dependencies if possible),
-            styled to match KnowingPath brand, accessible from main menu and top nav.
+          <span class="task-tag tag-rec">Rec</span>
+          <input type="checkbox" id="p6-4" class="task-check">
+          <label for="p6-4">
+            <strong>Expand FAQ section</strong> — common questions: "Why portrait video doesn't work", "How do I compare to a different pro?",
+            "What if phase detection is wrong?", "How do I export my analysis?"
+          </label>
+        </li>
+        <li>
+          <span class="task-tag tag-rec">Rec</span>
+          <input type="checkbox" id="p6-5" class="task-check">
+          <label for="p6-5">
+            <strong>Video tutorials placeholder</strong> — add section for embedded video walkthroughs (future enhancement)
           </label>
         </li>
       </ul>
@@ -649,7 +660,8 @@ ffmpeg -i input.MOV -c:v libx264 \
   <div class="footer-brand">KnowingPath.ai</div>
   <div class="footer-tagline">From Not Knowing to Knowing, With Compassion</div>
   <div style="margin-top:0.5rem;color:#2D3A50;font-size:0.7rem;">
-    © KnowingPath.ai &nbsp;·&nbsp; Golf Swing Analysis &nbsp;·&nbsp; Next Session Plan — from 2026-04-29
+    © KnowingPath.ai &nbsp;·&nbsp; Golf Swing Analysis &nbsp;·&nbsp; Next Session Plan — Updated 2026-04-30 22:56 UTC<br>
+    <strong style="color:#5BA3D9;">Status:</strong> P1 Browser Test is CRITICAL NEXT STEP. P2.5 Navigation & UI ✅ Complete.
   </div>
 </footer>
 
